@@ -1,0 +1,63 @@
+#ifndef LOOKUPTABLE_H_INCLUDED
+#define LOOKUPTABLE_H_INCLUDED
+#include "Node.h"
+
+typedef Node::OscType Type;
+
+class LookupTable
+{
+public:
+	LookupTable(int rate, int size);
+	LookupTable(int rate, int size, float freq);
+	~LookupTable();
+
+	void reset(double freq);
+	void reset(double freq, Type type);
+	double getFrequency() const;
+
+	Type getType() const;
+	void setType(Type type);
+
+	float* getArray() const;
+	int getArraySize() const;
+
+private:
+	//funcs:
+	void calcDelta(double freq, Type type);
+
+	void fillArr(Type type);
+	void fillSineArr();
+	void fillSqrArr();
+	void fillSawArr();
+	void fillReverseSawArr();
+	void sawFillHelper(int slopePolarity, int initValut, float** arr, int arrSize) const;
+
+	//vars:
+	Type type {Type::Unset};
+
+	int sampleRate;
+	int buffSize;
+
+	float* sineArr {nullptr};
+	int sineArrSize{ 0 };
+	double sineFreq {0};
+	float* sqaureArr {nullptr};
+	int sqrArrSize{ 0 };
+	double sqrFreq {0};
+	float* sawArr{ nullptr };
+	int sawArrSize{ 0 };
+	double sawFreq {0};
+	float* reverseSawArr {nullptr};
+	int reverseSawArrSize{ 0 };
+	double reverseSawFreq {0};
+
+	double frequency {0};
+	double cyclesPerSample {0};
+
+	double sineDelta {0};
+};
+
+
+
+
+#endif  // LOOKUPTABLE_H_INCLUDED
