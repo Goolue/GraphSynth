@@ -1,4 +1,5 @@
-#include "juce_core/juce_core.h"
+#pragma once
+
 #include "../JuceLibraryCode/JuceHeader.h"
 class ReferenceCountedBuffer : public juce::ReferenceCountedObject
 {
@@ -13,12 +14,12 @@ public:
 	void setPosition(int newPosition);
 	void resetPosition();
 	void loadToBuffer(juce::AudioSampleBuffer* other);
+	void addFromBuffer(juce::AudioSampleBuffer* other);
 
 private:
 	int position;
 	juce::AudioSampleBuffer buffer;
 
-	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReferenceCountedBuffer)
-};
-	
+	//JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ReferenceCountedBuffer)
+};	
 

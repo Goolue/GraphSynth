@@ -1,22 +1,25 @@
 #include "Node.h"
-#include "ReferenceCountedBuffer.h"
 
 #define NUM_COLOURS 139
 #define BACKGROUND_COLOUR Colours::white
 #define MAX_NUM_32_BIT 0x7FFFFFFF
 
-Node::Node(int nodeId, ComponentBoundsConstrainer* constraint)
-	: constrainer(constraint), id(nodeId), sampleRate(0), buffSize(0)
+Node::Node(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer)
+	: sampleRate(0), buffSize(0), constrainer(constraint), container(nodeContainer), id(nodeId)
 {
-	setBroughtToFrontOnMouseClick(true);
-
-	setSize(100, 100);
+	init();
 }
 
 Node::~Node()
 {
 	nodeColour = nullptr;
-	lbl = nullptr;
+}
+
+void Node::init()
+{
+	setBroughtToFrontOnMouseClick(true);
+
+	setSize(100, 100);
 }
 
 void Node::paint(Graphics& g)
@@ -35,7 +38,10 @@ void Node::mouseDown(const MouseEvent& event)
 
 void Node::mouseDrag(const MouseEvent& event)
 {
-	dragger.dragComponent(this, event, constrainer);
+	if (constrainer != nullptr)
+	{
+		dragger.dragComponent(this, event, constrainer);
+	}
 }
 
 void Node::resized()
@@ -81,6 +87,10 @@ int Node::getNumOfChannels() const
 void Node::setNumOfChannels(int num)
 {
 	numOfChannels = num;
+	if (!isSet)
+	{
+		checkIfSet();
+	}
 }
 
 int Node::getBuffSize() const
@@ -91,6 +101,10 @@ int Node::getBuffSize() const
 void Node::setBuffSize(int size)
 {
 	buffSize = size;
+	if (!isSet)
+	{
+		checkIfSet();
+	}
 }
 
 int Node::getSampleRate() const
@@ -101,12 +115,40 @@ int Node::getSampleRate() const
 void Node::setSampleRate(int rate)
 {
 	sampleRate = rate;
+	if (!isSet)
+	{
+		checkIfSet();
+	}
+}
+
+void Node::setContainer(abstractContainer<Node>* nodeContainer)
+{
+	container = nullptr;
+	container = nodeContainer;
+}
+
+void Node::checkIfSet()
+{
+	if (sampleRate > 0 && buffSize > 0 && numOfChannels > 0)
+	{
+		isSet = true;
+	}
+}
+
+bool Node::getIsSet() const
+{
+	return isSet;
 }
 
 void Node::prepareToPlay(int sampleRate, int buffSize)
 {
 	setSampleRate(sampleRate);
 	setBuffSize(buffSize);
+}
+
+ReferenceCountedBuffer::Ptr Node::process()
+{
+	return nullptr;
 }
 
 void Node::paintCircle(Colour* colour, Graphics& g) const
@@ -132,7 +174,7 @@ void Node::setRadius()
 	circleRadius = circleDiameter / 2;
 }
 
-ReferenceCountedBuffer* Node::takePrevBuff() const
+ReferenceCountedBuffer::Ptr Node::takePrevBuff() const
 {
 	if (prev == nullptr)
 	{

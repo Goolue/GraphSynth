@@ -1,7 +1,7 @@
 #include "OscNode.h"
 
-OscNode::OscNode(int nodeId, ComponentBoundsConstrainer* constraint, OscType oscType)
-	: Node(nodeId, constraint), volume(0)
+OscNode::OscNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer,
+	OscType oscType) : Node(nodeId, constraint, nodeContainer)
 {
 	type = oscType;
 }
@@ -10,13 +10,13 @@ OscNode::~OscNode()
 {
 }
 
-ReferenceCountedBuffer* OscNode::process()
+ReferenceCountedBuffer::Ptr OscNode::process()
 {
-	ReferenceCountedBuffer* buff = takePrevBuff();
+	ReferenceCountedBuffer::Ptr buff = takePrevBuff();
 	return generateBuff(buff);
 }
 
-Node::OscType OscNode::getType() const
+OscType OscNode::getType() const
 {
 	return type;
 }
@@ -26,18 +26,14 @@ void OscNode::setType(OscType oscType)
 	type = oscType;
 }
 
-void OscNode::makeTable() const
+void OscNode::makeTable(float frequency)
 {
-	if (type != OscType::Unset && lookupTable->getFrequency() > 0)
+	if (type != OscType::Unset)
 	{
-		lookupTable->reset(lookupTable->getFrequency(), type);
-	}
-}
-
-void OscNode::makeTable(float frequency) const
-{
-	if (type != OscType::Unset && lookupTable->getFrequency() > 0)
-	{
+		if (lookupTable == nullptr)
+		{
+			lookupTable = new LookupTable(sampleRate, buffSize);
+		}
 		lookupTable->reset(frequency, type);
 	}
 }
@@ -45,23 +41,51 @@ void OscNode::makeTable(float frequency) const
 void OscNode::makeTable(float frequency, OscType type)
 {
 	this->type = type;
-	if (type != OscType::Unset && lookupTable->getFrequency() > 0)
+	if (type != OscType::Unset)
 	{
 		lookupTable->reset(frequency, type);
 	}
 }
 
-ReferenceCountedBuffer* OscNode::generateBuff(ReferenceCountedBuffer* buff)
+void OscNode::makeTable(float frequency, OscType type, int buffSize, int sampleRate)
 {
-	switch (type)
+	this->type = type;
+	if (lookupTable == nullptr)
 	{
-	case Sine:		 return generateSine(buff);
-	case Square:	 return generateSquare(buff);
-	case Saw:		 return generateSaw(buff);
-	case ReverseSaw: return generateReverseSaw(buff);
-	case Noise:		 return generateNoise(buff);
-	default:
-		DBG("no such osc type!");
-		return nullptr;
+		lookupTable = new LookupTable(sampleRate, buffSize);
+	}
+	if (type != OscType::Unset)
+	{
+		if (lookupTable->getSampleRate() != sampleRate)
+		{
+			lookupTable->setSampleRate(sampleRate);
+		}
+		if (lookupTable->getBufferSize() != buffSize)
+		{
+			lookupTable->setBufferSize(buffSize);
+		}
+		lookupTable->reset(frequency, type);
 	}
 }
+
+ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr buff) const
+{
+	AudioSampleBuffer workingBuff;
+	workingBuff.setSize(1, buffSize);
+	float* toWriteTo = workingBuff.getWritePointer(0);
+	float* toReadFrom = lookupTable->getArray();
+	int arrSize = lookupTable->getArraySize();
+	int position = lookupTable->getPosition();
+	for (int i = 0; i < buffSize; ++i)
+	{
+		toWriteTo[i] = toReadFrom[position];
+		if (position == arrSize - 1)
+		{
+			position = 0;
+		}
+	}
+	lookupTable->setPosition(position);
+	buff->addFromBuffer(&workingBuff);
+	return buff;
+}
+

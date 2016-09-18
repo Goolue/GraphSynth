@@ -6,6 +6,7 @@
   ==============================================================================
 */
 
+#include "NodeContainer.h"
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 
@@ -24,12 +25,11 @@ public:
     //==============================================================================
     MainContentComponent()
     {
-		/*constrainter = new ComponentBoundsConstrainer();
-		const Rectangle<int> rect(0, 0, 800, 200);
+		/*const Rectangle<int> rect(0, 0, 800, 200);
 		node = new Node(1, constrainter);
-		constrainter->setMinimumOnscreenAmounts(0xffffff, 0xffffff, 0xffffff, 0xffffff);
 		addAndMakeVisible(node);*/
 
+		addAndMakeVisible(container = new NodeContainer);
         setSize (800, 600);
 
         // specify the number of input and output channels that we want to open
@@ -51,6 +51,8 @@ public:
         // but be careful - it will be called on the audio thread, not the GUI thread.
 
         // For more details, see the help for AudioProcessor::prepareToPlay()
+
+		container->prepareToPlay(samplesPerBlockExpected, sampleRate);
     }
 
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
@@ -61,7 +63,7 @@ public:
 
         // Right now we are not producing any data, in which case we need to clear the buffer
         // (to prevent the output of random noise)
-        bufferToFill.clearActiveBufferRegion();
+		container->getNextAudioBlock(bufferToFill);
     }
 
     void releaseResources() override
@@ -83,7 +85,7 @@ public:
 
     void resized() override
     {
-		node->setBounds(10, 10, 200, 200);
+		container->setBounds(0, 0, 800, 600);
     }
 
 
@@ -91,8 +93,7 @@ private:
     //==============================================================================
 
     // Your private member variables go here...
-	ScopedPointer<ComponentBoundsConstrainer> constrainter;
-	ScopedPointer<Node> node;
+	ScopedPointer<NodeContainer> container;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };

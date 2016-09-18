@@ -1,8 +1,8 @@
-#ifndef LOOKUPTABLE_H_INCLUDED
-#define LOOKUPTABLE_H_INCLUDED
+#pragma once
+
 #include "Node.h"
 
-typedef Node::OscType Type;
+//typedef OscType Type;
 
 class LookupTable
 {
@@ -12,20 +12,27 @@ public:
 	~LookupTable();
 
 	void reset(double freq);
-	void reset(double freq, Type type);
+	void reset(double freq, OscType type);
 	double getFrequency() const;
 
-	Type getType() const;
-	void setType(Type type);
+	OscType getType() const;
+	void setType(OscType type);
 
 	float* getArray() const;
 	int getArraySize() const;
+	int getPosition() const;
+	void setPosition(int pos);
+	int getSampleRate() const;
+	void setSampleRate(int sample_rate);
+	int getBufferSize() const;
+	void setBufferSize(int buff_size);
+
 
 private:
 	//funcs:
-	void calcDelta(double freq, Type type);
+	void calcDelta(double freq, OscType type);
 
-	void fillArr(Type type);
+	void fillArr(OscType type);
 	void fillSineArr();
 	void fillSqrArr();
 	void fillSawArr();
@@ -33,10 +40,11 @@ private:
 	void sawFillHelper(int slopePolarity, int initValut, float** arr, int arrSize) const;
 
 	//vars:
-	Type type {Type::Unset};
+	OscType type{ OscType::Unset };
 
 	int sampleRate;
 	int buffSize;
+	int position{ 0 };
 
 	float* sineArr {nullptr};
 	int sineArrSize{ 0 };
@@ -56,8 +64,3 @@ private:
 
 	double sineDelta {0};
 };
-
-
-
-
-#endif  // LOOKUPTABLE_H_INCLUDED

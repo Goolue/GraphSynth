@@ -1,26 +1,30 @@
-#ifndef NODE_H_INCLUDED
-#define NODE_H_INCLUDED
 
-#include "JuceHeader.h"
-class ReferenceCountedBuffer;
+/*This is a virtual class representing an abstract node in the graph.
+The classes OscNode and FxNode inherite from it.
+Each Node is contained inside a NodeContainer (which holds many Nodes)*/
+#pragma once
 
-class Node : public Component, public MouseListener
+#include "ReferenceCountedBuffer.h"
+#include "abstractContainer.h" //used to avoid circular dependencies 
+
+enum class OscType
+{
+	Unset,
+	Sine,
+	Square,
+	Saw,
+	ReverseSaw,
+	Noise
+};
+
+class Node :public ReferenceCountedObject, public Component, public MouseListener
 {
 public:
 
-	enum OscType
-	{
-		Unset,
-		Sine,
-		Square,
-		Saw,
-		ReverseSaw,
-		Noise
-	};
-
-
-	Node(int nodeId, ComponentBoundsConstrainer* constraint);
+	Node(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer);
 	~Node();
+
+	void init();
 
 	void paint(Graphics& g) override;
 	void mouseDown(const MouseEvent& event) override;
@@ -40,12 +44,22 @@ public:
 	void setBuffSize(int size);
 	int getSampleRate() const;
 	void setSampleRate(int rate);
+	void setContainer(abstractContainer<Node>* nodeContainer);
+
+	void checkIfSet();
+	bool getIsSet() const;
 
 	virtual void prepareToPlay(int sampleRate, int buffSize); //this gets overridden!
-	virtual ReferenceCountedBuffer* process() = 0;
+	virtual ReferenceCountedBuffer::Ptr process();
 
 protected:
-	ReferenceCountedBuffer* takePrevBuff() const; //ask for a buffer from prev
+	ReferenceCountedBuffer::Ptr takePrevBuff() const; //ask for a buffer from prev
+	Node* next{ nullptr };
+	Node* prev{ nullptr };
+
+	int sampleRate;
+	int buffSize;
+	int numOfChannels{ 1 };
 
 private:
 	//funcs:
@@ -56,20 +70,13 @@ private:
 	//vars:
 	ComponentDragger dragger;
 	ComponentBoundsConstrainer* constrainer;
-	Node* next;
-	Node* prev;
 	ScopedPointer<Colour> nodeColour;
-	ScopedPointer<Label> lbl;
+
+	ScopedPointer<abstractContainer<Node>> container {nullptr};
 
 	int id;
 	float circleRadius;
 	float circleDiameter;
-	int sampleRate;
-	int buffSize;
-	int numOfChannels;
+
+	bool isSet {false};
 };
-
-
-
-
-#endif  // NODE_H_INCLUDED

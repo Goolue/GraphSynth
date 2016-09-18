@@ -1,33 +1,28 @@
-#include "Node.h"
+#pragma once
+
 #include "LookupTable.h"
 
 class OscNode : public Node
 {
 public:
-	OscNode(int nodeId, ComponentBoundsConstrainer* constraint, OscType oscType);
+	OscNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer,
+		OscType oscType);
 	~OscNode();
 
-	ReferenceCountedBuffer* process() override;
+	ReferenceCountedBuffer::Ptr process() override;
 	OscType getType() const;
 	void setType(OscType oscType);
 
+	void makeTable(float frequency);
+	void makeTable(float frequency, OscType type);
+	void makeTable(float frequency, OscType type, int buffSize, int sampleRate);
 private:
 	//funcs:
-	void makeTable() const;
-	void makeTable(float frequency) const;
-	void makeTable(float frequency, OscType type);
-
-	ReferenceCountedBuffer* generateBuff(ReferenceCountedBuffer* buff);
-	ReferenceCountedBuffer* generateSine(ReferenceCountedBuffer* buff);
-	ReferenceCountedBuffer* generateSquare(ReferenceCountedBuffer* buff);
-	ReferenceCountedBuffer* generateSaw(ReferenceCountedBuffer* buff);
-	ReferenceCountedBuffer* generateReverseSaw(ReferenceCountedBuffer* buff);
-	ReferenceCountedBuffer* generateNoise(ReferenceCountedBuffer* buff);
+	ReferenceCountedBuffer::Ptr generateBuff(ReferenceCountedBuffer::Ptr buff) const;
 
 	//vars:
-	ScopedPointer<LookupTable> lookupTable; //table used for wave synthesis
-	OscType type;
-	float volume;
+	ScopedPointer<LookupTable> lookupTable{ nullptr }; //table used for wave synthesis
+	OscType type{ OscType::Unset };
+	float volume{ 0 };
 
 };
-

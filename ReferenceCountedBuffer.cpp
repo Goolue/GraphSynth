@@ -40,6 +40,17 @@ void ReferenceCountedBuffer::loadToBuffer(AudioSampleBuffer* other)
 	}
 }
 
+void ReferenceCountedBuffer::addFromBuffer(juce::AudioSampleBuffer* other)
+{
+	int numChannels = other->getNumChannels();
+	int numSamples = other->getNumSamples();
+	buffer.setSize(numChannels, numSamples, false, true, false);
+	for (int channelIndex = 0; channelIndex < numChannels; channelIndex++)
+	{
+		buffer.addFrom(channelIndex, 0, other->getReadPointer(channelIndex), numSamples);
+	}
+}
+
 //#endif
 
 

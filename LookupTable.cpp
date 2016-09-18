@@ -16,7 +16,7 @@ LookupTable::~LookupTable()
 
 void LookupTable::reset(double freq)
 {
-	if (type != nullptr)
+	if (type != OscType::Unset)
 	{
 		reset(freq, type);
 	}
@@ -26,14 +26,15 @@ void LookupTable::reset(double freq)
 	}
 }
 
-void LookupTable::reset(double freq, Type type)
+void LookupTable::reset(double freq, OscType type)
 {
-	if (type != Type::Unset && type != Type::Noise &&
-		(type == Type::Sine && freq != sineFreq) ||
-		(type == Type::Square && freq != sqrFreq) ||
-		(type == Type::Saw && freq != sawFreq) ||
-		(type == Type::ReverseSaw && freq != reverseSawFreq))
+	if (type != OscType::Unset && type != OscType::Noise &&
+		(type == OscType::Sine && freq != sineFreq) ||
+		(type == OscType::Square && freq != sqrFreq) ||
+		(type == OscType::Saw && freq != sawFreq) ||
+		(type == OscType::ReverseSaw && freq != reverseSawFreq))
 	{
+		position = 0;
 		setType(type);
 		calcDelta(freq, type);
 		fillArr(type);
@@ -45,12 +46,12 @@ double LookupTable::getFrequency() const
 	return frequency;
 }
 
-Type LookupTable::getType() const
+OscType LookupTable::getType() const
 {
 	return type;
 }
 
-void LookupTable::setType(Type type)
+void LookupTable::setType(OscType type)
 {
 	this->type = type;
 }
@@ -59,10 +60,10 @@ float* LookupTable::getArray() const
 {
 	switch (type)
 	{
-	case Type::Sine:		return sineArr;
-	case Type::Square:		return sqaureArr;
-	case Type::Saw:			return sawArr;
-	case Type::ReverseSaw:	return reverseSawArr;
+	case OscType::Sine:		return sineArr;
+	case OscType::Square:		return sqaureArr;
+	case OscType::Saw:			return sawArr;
+	case OscType::ReverseSaw:	return reverseSawArr;
 	default:
 		DBG("Invalid type");
 		return nullptr;
@@ -73,31 +74,61 @@ int LookupTable::getArraySize() const
 {
 	switch (type)
 	{
-	case Type::Sine:		return sineArrSize;
-	case Type::Square:		return sqrArrSize;
-	case Type::Saw:			return sawArrSize;
-	case Type::ReverseSaw:	return reverseSawArrSize;
+	case OscType::Sine:		return sineArrSize;
+	case OscType::Square:		return sqrArrSize;
+	case OscType::Saw:			return sawArrSize;
+	case OscType::ReverseSaw:	return reverseSawArrSize;
 	default:
 		DBG("Invalid type");
 		return 0;
 	}
 }
 
-void LookupTable::calcDelta(double freq, Type type)
+int LookupTable::getPosition() const
+{
+	return position;
+}
+
+void LookupTable::setPosition(int pos)
+{
+	position = 0;
+}
+
+int LookupTable::getSampleRate() const
+{
+	return sampleRate;
+}
+
+void LookupTable::setSampleRate(int sample_rate)
+{
+	sampleRate = sample_rate;
+}
+
+int LookupTable::getBufferSize() const
+{
+	return buffSize;
+}
+
+void LookupTable::setBufferSize(int buff_size)
+{
+	buffSize = buff_size;
+}
+
+void LookupTable::calcDelta(double freq, OscType type)
 {
 	frequency = freq;
 	cyclesPerSample = frequency / sampleRate;
 	sineDelta = cyclesPerSample * 2.0 * double_Pi;
 }
 
-void LookupTable::fillArr(Type type)
+void LookupTable::fillArr(OscType type)
 {
 	switch (type)
 	{
-	case Type::Sine:		return fillSineArr();
-	case Type::Square:		return fillSqrArr();
-	case Type::Saw:			return fillSawArr();
-	case Type::ReverseSaw:	return fillReverseSawArr();
+	case OscType::Sine:		return fillSineArr();
+	case OscType::Square:		return fillSqrArr();
+	case OscType::Saw:			return fillSawArr();
+	case OscType::ReverseSaw:	return fillReverseSawArr();
 	default: 
 		DBG("Invalid type");
 		break;
