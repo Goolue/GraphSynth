@@ -37,9 +37,10 @@ void NodeContainer::getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill
 			int size = bufferToFill.buffer->getNumSamples();
 			int numChannels = bufferToFill.buffer->getNumChannels();
 			int sampleBuffSize = sampleBuff->getNumSamples();
+			int sampleBuffNumChannels = sampleBuff->getNumChannels();
 			for (int channel = 0; channel < numChannels; ++channel)
 			{
-				const float* toReadFrom = sampleBuff->getReadPointer(channel % sampleBuff->getNumChannels());
+				const float* toReadFrom = sampleBuff->getReadPointer(channel % sampleBuffNumChannels);
 				float* toWriteTo = bufferToFill.buffer->getWritePointer(channel);
 				for (int i = 0; i < size; ++i)
 				{

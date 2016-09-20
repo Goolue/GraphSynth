@@ -1,17 +1,19 @@
 #include "LookupTable.h"
-#include "Math.h"
+#include <math.h>
 
 LookupTable::LookupTable(int rate, int size) : sampleRate(rate), buffSize(size)
 {
+	makeMainArr();
 }
 
 LookupTable::LookupTable(int rate, int size, float freq) : sampleRate(rate), buffSize(size)
 {
+	makeMainArr();
 }
 
 LookupTable::~LookupTable()
 {
-	//TODO: clean here
+	cleanMainArr();
 }
 
 void LookupTable::reset(double freq)
@@ -60,7 +62,7 @@ float* LookupTable::getArray() const
 {
 	switch (type)
 	{
-	case OscType::Sine:		return sineArr;
+	case OscType::Sine:			return sineArr;
 	case OscType::Square:		return sqaureArr;
 	case OscType::Saw:			return sawArr;
 	case OscType::ReverseSaw:	return reverseSawArr;
@@ -121,11 +123,38 @@ void LookupTable::calcDelta(double freq, OscType type)
 	sineDelta = cyclesPerSample * 2.0 * double_Pi;
 }
 
+void LookupTable::makeMainArr()
+{
+	mainArr[0] = &sineArr;
+	mainArr[1] = &sqaureArr;
+	mainArr[2] = &sawArr;
+	mainArr[3] = &reverseSawArr;
+}
+
+void LookupTable::cleanMainArr()
+{
+	for (float** arr : mainArr)
+	{
+		if (*arr != nullptr)
+		{
+			delete[](*arr);
+		}
+	}
+}
+
+void LookupTable::fillArr()
+{
+	if (type != OscType::Unset)
+	{
+		fillArr(type);
+	}
+}
+
 void LookupTable::fillArr(OscType type)
 {
 	switch (type)
 	{
-	case OscType::Sine:		return fillSineArr();
+	case OscType::Sine:			return fillSineArr();
 	case OscType::Square:		return fillSqrArr();
 	case OscType::Saw:			return fillSawArr();
 	case OscType::ReverseSaw:	return fillReverseSawArr();
@@ -137,6 +166,7 @@ void LookupTable::fillArr(OscType type)
 
 void LookupTable::fillSineArr()
 {
+	//TODO: does not sound like sine
 	sineFreq = frequency;
 	if (sineArr != nullptr)
 	{
@@ -147,7 +177,8 @@ void LookupTable::fillSineArr()
 	double currAngle = 0;
 	for (int i = 0; i < sineArrSize; ++i)
 	{
-		sineArr[i] = sinf(currAngle);
+		float val = sin(currAngle);
+		sineArr[i] = val;
 		currAngle += sineDelta;
 	}
 }

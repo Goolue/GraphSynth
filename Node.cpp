@@ -179,6 +179,7 @@ ReferenceCountedBuffer::Ptr Node::takePrevBuff() const
 	if (prev == nullptr)
 	{
 		ReferenceCountedBuffer::Ptr buff = new ReferenceCountedBuffer(numOfChannels, buffSize);
+		buff->getAudioSampleBuffer()->clear();
 		return buff;
 	}
 	return prev->process();

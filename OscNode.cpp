@@ -79,7 +79,8 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 	for (int i = 0; i < buffSize; ++i)
 	{
 		toWriteTo[i] = toReadFrom[position];
-		if (position == arrSize - 1)
+		position++;
+		if (position == arrSize)
 		{
 			position = 0;
 		}

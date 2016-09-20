@@ -27,12 +27,15 @@ public:
 	int getBufferSize() const;
 	void setBufferSize(int buff_size);
 
+	void fillArr();
+	void fillArr(OscType type);
 
 private:
 	//funcs:
 	void calcDelta(double freq, OscType type);
+	void makeMainArr();
+	void cleanMainArr();
 
-	void fillArr(OscType type);
 	void fillSineArr();
 	void fillSqrArr();
 	void fillSawArr();
@@ -45,6 +48,8 @@ private:
 	int sampleRate;
 	int buffSize;
 	int position{ 0 };
+
+	float** mainArr[4];
 
 	float* sineArr {nullptr};
 	int sineArrSize{ 0 };
