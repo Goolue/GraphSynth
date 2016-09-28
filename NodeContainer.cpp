@@ -110,7 +110,8 @@ ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
 	ReferenceCountedObjectPtr<OscNode> node = new OscNode(id, &constrainter, this, type);
 	node->setBuffSize(buffSize);
 	node->setSampleRate(sampleRate);
-	node->makeTable(440, OscType::Sine, buffSize, sampleRate);
+	node->setFrequency(440);
+	node->makeTable(OscType::Saw, buffSize, sampleRate);
 	addToArray(node);
 	return node;
 }

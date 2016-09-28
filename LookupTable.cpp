@@ -3,24 +3,26 @@
 
 LookupTable::LookupTable(int rate, int size) : sampleRate(rate), buffSize(size)
 {
-	makeMainArr();
 }
 
 LookupTable::LookupTable(int rate, int size, float freq) : sampleRate(rate), buffSize(size)
 {
-	makeMainArr();
 }
 
 LookupTable::~LookupTable()
 {
-	cleanMainArr();
+	//TODO: find better solution than new -> delete
+	delete[] sineArr;
+	delete[] sqaureArr;
+	delete[] sawArr;
+	delete[] reverseSawArr;
 }
 
-void LookupTable::reset(double freq)
+void LookupTable::reset()
 {
 	if (type != OscType::Unset)
 	{
-		reset(freq, type);
+		reset(type);
 	}
 	else
 	{
@@ -28,13 +30,9 @@ void LookupTable::reset(double freq)
 	}
 }
 
-void LookupTable::reset(double freq, OscType type)
+void LookupTable::reset(OscType type)
 {
-	if (type != OscType::Unset && type != OscType::Noise &&
-		(type == OscType::Sine && freq != sineFreq) ||
-		(type == OscType::Square && freq != sqrFreq) ||
-		(type == OscType::Saw && freq != sawFreq) ||
-		(type == OscType::ReverseSaw && freq != reverseSawFreq))
+	if (type != OscType::Unset && type != OscType::Noise)
 	{
 		position = 0;
 		setType(type);
@@ -72,18 +70,9 @@ const float* LookupTable::getArray() const
 	}
 }
 
-int LookupTable::getArraySize() const
+int LookupTable::getArraySize()
 {
-	switch (type)
-	{
-	case OscType::Sine:		return sineArrSize;
-	case OscType::Square:		return sqrArrSize;
-	case OscType::Saw:			return sawArrSize;
-	case OscType::ReverseSaw:	return reverseSawArrSize;
-	default:
-		DBG("Invalid type");
-		return 0;
-	}
+	return LOOKUP_TABLE_ARR_SIZE;
 }
 
 int LookupTable::getPosition() const
@@ -121,25 +110,6 @@ void LookupTable::calcDelta()
 	sineDelta = 2.0 * double_Pi / LOOKUP_TABLE_ARR_SIZE;
 }
 
-void LookupTable::makeMainArr()
-{
-	//mainArr[0] = &sineArr;
-	mainArr[1] = &sqaureArr;
-	mainArr[2] = &sawArr;
-	mainArr[3] = &reverseSawArr;
-}
-
-void LookupTable::cleanMainArr()
-{
-	for (float** arr : mainArr)
-	{
-		if (*arr != nullptr)
-		{
-			delete[](*arr);
-		}
-	}
-}
-
 void LookupTable::fillArr()
 {
 	if (type != OscType::Unset)
@@ -167,66 +137,57 @@ void LookupTable::fillSineArr()
 	double currAngle = 0;
 	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
 	{
-		float val = sin(currAngle);
-		sineArr[i] = val;
+		sineArr[i] = sin(currAngle);
 		currAngle += sineDelta;
 	}
 }
 
 void LookupTable::fillSqrArr()
 {
-	sqrFreq = frequency;
-	if (sqaureArr != nullptr)
+	float phase = 0;
+	float polarity = 0.75; //not 1 so it won't be too loud
+	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
 	{
-		delete[] sqaureArr;
-	}
-	sqrArrSize = ceil(1 / sineDelta);
-	sqaureArr = new float[sqrArrSize];
-	double phase = 0;
-	int polarity = 1;
-	for (int i = 0; i < sqrArrSize; ++i)
-	{
-		sqaureArr[i] = polarity;
-		phase += sineDelta;
-		if (phase > 2 * double_Pi) 
+		if (phase < double_Pi)
 		{
-			polarity *= -1;
+			sqaureArr[i] = polarity;
 		}
+		else
+		{
+			sqaureArr[i] = -polarity;
+		}
+		phase += sineDelta;
 	}
 }
 
 void LookupTable::fillSawArr()
 {
-	sawFreq = frequency;
-	sawArrSize = ceil(1 / sineDelta);
-	sawFillHelper(1, 0, &sawArr, sawArrSize);
+	sawFillHelper(1, 0, sawArr);
 }
 
 void LookupTable::fillReverseSawArr()
 {
-	reverseSawFreq = frequency;
-	reverseSawArrSize = ceil(1 / sineDelta);
-	sawFillHelper(-1, 1, &reverseSawArr, reverseSawArrSize);
+	sawFillHelper(-1, 1, reverseSawArr);
 }
 
-void LookupTable::sawFillHelper(int slopePolarity, int initValut, float** arr, int arrSize) const
+void LookupTable::sawFillHelper(int slopePolarity, float initValue, float (&arr)[LOOKUP_TABLE_ARR_SIZE]) const
 {
-	if (*arr != nullptr)
-	{
-		delete[] *arr;
-	}
-	*arr = new float[arrSize];
-	float slope = slopePolarity * (2 / cyclesPerSample);
+	float slope = slopePolarity * static_cast<float>(4.f / LOOKUP_TABLE_ARR_SIZE);
 	double phase = 0;
 	int polarity = 1;
-	for (int i = 0; i < arrSize; ++i)
+	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
 	{
-		sawArr[i] = initValut;
+		arr[i] = initValue;
+		//DBG(initValue);
 		phase += sineDelta;
-		if (phase > 2 * double_Pi)
+		if (phase > double_Pi * 0.5 && phase < double_Pi * 1.5)
 		{
-			polarity *= -1;
+			polarity = -1;
 		}
-		initValut += slope;
+		else
+		{
+			polarity = 1;
+		}
+		initValue += slope * polarity;
 	}
 }

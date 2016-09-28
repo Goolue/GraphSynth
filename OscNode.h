@@ -12,10 +12,12 @@ public:
 	ReferenceCountedBuffer::Ptr process() override;
 	OscType getType() const;
 	void setType(OscType oscType);
+	float getFrequency() const;
+	void setFrequency(float freq);
 
-	void makeTable(float frequency);
-	void makeTable(float frequency, OscType type);
-	void makeTable(float frequency, OscType type, int buffSize, int sampleRate);
+	void makeTable();
+	void makeTable(OscType type);
+	void makeTable(OscType type, int buffSize, int sampleRate);
 private:
 	//funcs:
 	ReferenceCountedBuffer::Ptr generateBuff(ReferenceCountedBuffer::Ptr buff) const;

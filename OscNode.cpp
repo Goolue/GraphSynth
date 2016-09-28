@@ -26,32 +26,39 @@ void OscNode::setType(OscType oscType)
 	type = oscType;
 }
 
-void OscNode::makeTable(float frequency)
+float OscNode::getFrequency() const
 {
-	this->frequency = frequency;
+	return frequency;
+}
+
+void OscNode::setFrequency(float freq)
+{
+	frequency = freq;
+}
+
+void OscNode::makeTable()
+{
 	if (type != OscType::Unset)
 	{
 		if (lookupTable == nullptr)
 		{
 			lookupTable = new LookupTable(sampleRate, buffSize);
 		}
-		lookupTable->reset(frequency, type);
+		lookupTable->reset(type);
 	}
 }
 
-void OscNode::makeTable(float frequency, OscType type)
+void OscNode::makeTable(OscType type)
 {
-	this->frequency = frequency;
 	this->type = type;
 	if (type != OscType::Unset)
 	{
-		lookupTable->reset(frequency, type);
+		lookupTable->reset(type);
 	}
 }
 
-void OscNode::makeTable(float frequency, OscType type, int buffSize, int sampleRate)
+void OscNode::makeTable(OscType type, int buffSize, int sampleRate)
 {
-	this->frequency = frequency;
 	this->type = type;
 	if (lookupTable == nullptr)
 	{
@@ -67,18 +74,16 @@ void OscNode::makeTable(float frequency, OscType type, int buffSize, int sampleR
 		{
 			lookupTable->setBufferSize(buffSize);
 		}
-		lookupTable->reset(frequency, type);
+		lookupTable->reset(type);
 	}
 }
 
 ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr buff) const
 {
-	//TODO: sine wave does not finish...
 	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
 	const float* toReadFrom = lookupTable->getArray();
 	double position = lookupTable->getPosition();
 	double ratio = (frequency / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
-	//double ratio = 2.32199546;
 	int currPosition = static_cast<int>(position);
 	for (int i = 0; i < buffSize; ++i)
 	{
@@ -86,8 +91,8 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 		float floorVal = toReadFrom[currPosition];
 		float ceilVal = toReadFrom[currPosition + 1];
 		float val = interpolateValues(ratio, floorVal, ceilVal);
+		DBG(val);
 		toWriteTo[i] = val;
-		//DBG(val);
 		position += ratio;
 	}
 	lookupTable->setPosition(currPosition);
