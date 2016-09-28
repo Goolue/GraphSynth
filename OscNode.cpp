@@ -28,6 +28,7 @@ void OscNode::setType(OscType oscType)
 
 void OscNode::makeTable(float frequency)
 {
+	this->frequency = frequency;
 	if (type != OscType::Unset)
 	{
 		if (lookupTable == nullptr)
@@ -40,6 +41,7 @@ void OscNode::makeTable(float frequency)
 
 void OscNode::makeTable(float frequency, OscType type)
 {
+	this->frequency = frequency;
 	this->type = type;
 	if (type != OscType::Unset)
 	{
@@ -49,6 +51,7 @@ void OscNode::makeTable(float frequency, OscType type)
 
 void OscNode::makeTable(float frequency, OscType type, int buffSize, int sampleRate)
 {
+	this->frequency = frequency;
 	this->type = type;
 	if (lookupTable == nullptr)
 	{
@@ -70,23 +73,29 @@ void OscNode::makeTable(float frequency, OscType type, int buffSize, int sampleR
 
 ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr buff) const
 {
-	AudioSampleBuffer workingBuff;
-	workingBuff.setSize(1, buffSize);
-	float* toWriteTo = workingBuff.getWritePointer(0);
-	float* toReadFrom = lookupTable->getArray();
-	int arrSize = lookupTable->getArraySize();
-	int position = lookupTable->getPosition();
+	//TODO: sine wave does not finish...
+	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
+	const float* toReadFrom = lookupTable->getArray();
+	double position = lookupTable->getPosition();
+	double ratio = (frequency / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
+	//double ratio = 2.32199546;
+	int currPosition = static_cast<int>(position);
 	for (int i = 0; i < buffSize; ++i)
 	{
-		toWriteTo[i] = toReadFrom[position];
-		position++;
-		if (position == arrSize)
-		{
-			position = 0;
-		}
+		currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
+		float floorVal = toReadFrom[currPosition];
+		float ceilVal = toReadFrom[currPosition + 1];
+		float val = interpolateValues(ratio, floorVal, ceilVal);
+		toWriteTo[i] = val;
+		//DBG(val);
+		position += ratio;
 	}
-	lookupTable->setPosition(position);
-	buff->addFromBuffer(&workingBuff);
+	lookupTable->setPosition(currPosition);
 	return buff;
 }
 
+float OscNode::interpolateValues(double ratio, double floor, double ceil)
+{
+	float slope = ceil - floor;
+	return floor + ratio * slope;
+}

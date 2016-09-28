@@ -2,7 +2,8 @@
 
 #include "Node.h"
 
-//typedef OscType Type;
+#define LOOKUP_TABLE_ARR_SIZE 1024
+#define LOOKUP_TABLE_FREQUENCY 440 //Hz
 
 class LookupTable
 {
@@ -18,7 +19,7 @@ public:
 	OscType getType() const;
 	void setType(OscType type);
 
-	float* getArray() const;
+	const float* getArray() const;
 	int getArraySize() const;
 	int getPosition() const;
 	void setPosition(int pos);
@@ -32,7 +33,7 @@ public:
 
 private:
 	//funcs:
-	void calcDelta(double freq, OscType type);
+	void calcDelta();
 	void makeMainArr();
 	void cleanMainArr();
 
@@ -51,7 +52,7 @@ private:
 
 	float** mainArr[4];
 
-	float* sineArr {nullptr};
+	float sineArr[LOOKUP_TABLE_ARR_SIZE];
 	int sineArrSize{ 0 };
 	double sineFreq {0};
 	float* sqaureArr {nullptr};

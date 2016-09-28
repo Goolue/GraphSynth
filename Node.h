@@ -58,7 +58,7 @@ protected:
 	Node* prev{ nullptr };
 
 	int sampleRate;
-	int buffSize;
+	double buffSize; //is a double for ratio calculation accuracy
 	int numOfChannels{ 1 };
 
 private:

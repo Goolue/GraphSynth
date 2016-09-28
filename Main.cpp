@@ -97,5 +97,5 @@ private:
 };
 
 //==============================================================================
-// This macro generates the main() routine that launches the app.
+// This macro generates the main() routine that launches the app.   
 START_JUCE_APPLICATION (GraphSynthApplication)

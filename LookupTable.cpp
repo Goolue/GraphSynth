@@ -38,7 +38,7 @@ void LookupTable::reset(double freq, OscType type)
 	{
 		position = 0;
 		setType(type);
-		calcDelta(freq, type);
+		calcDelta();
 		fillArr(type);
 	}
 }
@@ -58,7 +58,7 @@ void LookupTable::setType(OscType type)
 	this->type = type;
 }
 
-float* LookupTable::getArray() const
+const float* LookupTable::getArray() const
 {
 	switch (type)
 	{
@@ -116,16 +116,14 @@ void LookupTable::setBufferSize(int buff_size)
 	buffSize = buff_size;
 }
 
-void LookupTable::calcDelta(double freq, OscType type)
+void LookupTable::calcDelta()
 {
-	frequency = freq;
-	cyclesPerSample = frequency / sampleRate;
-	sineDelta = cyclesPerSample * 2.0 * double_Pi;
+	sineDelta = 2.0 * double_Pi / LOOKUP_TABLE_ARR_SIZE;
 }
 
 void LookupTable::makeMainArr()
 {
-	mainArr[0] = &sineArr;
+	//mainArr[0] = &sineArr;
 	mainArr[1] = &sqaureArr;
 	mainArr[2] = &sawArr;
 	mainArr[3] = &reverseSawArr;
@@ -166,16 +164,8 @@ void LookupTable::fillArr(OscType type)
 
 void LookupTable::fillSineArr()
 {
-	//TODO: does not sound like sine
-	sineFreq = frequency;
-	if (sineArr != nullptr)
-	{
-		delete[] sineArr;
-	}
-	sineArrSize = ceil(1 / cyclesPerSample);
-	sineArr = new float[sineArrSize];
 	double currAngle = 0;
-	for (int i = 0; i < sineArrSize; ++i)
+	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
 	{
 		float val = sin(currAngle);
 		sineArr[i] = val;

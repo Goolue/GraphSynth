@@ -29,6 +29,12 @@ public:
 		node = new Node(1, constrainter);
 		addAndMakeVisible(node);*/
 
+
+		/*lookup = new LookupTable(44100, 441, 440);
+		lookup->reset(440, OscType::Sine);
+		arr = lookup->getArray();
+		size = lookup->getArraySize();*/
+
 		addAndMakeVisible(container = new NodeContainer);
         setSize (800, 600);
 
@@ -57,13 +63,19 @@ public:
 
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
-        // Your audio-processing code goes here!
-
-        // For more details, see the help for AudioProcessor::getNextAudioBlock()
-
-        // Right now we are not producing any data, in which case we need to clear the buffer
-        // (to prevent the output of random noise)
 		container->getNextAudioBlock(bufferToFill);
+
+		/*int buffSize = bufferToFill.numSamples;
+		float* chan1 = bufferToFill.buffer->getWritePointer(0);
+		float* chan2 = bufferToFill.buffer->getWritePointer(1);
+		int i;
+	    for (i = 0; i < buffSize; ++i)
+	    {
+			float val = arr[i % size];
+			chan1[i] = val;
+			chan2[i] = val;
+	    }
+		position = i % size;*/
     }
 
     void releaseResources() override
@@ -94,6 +106,12 @@ private:
 
     // Your private member variables go here...
 	ScopedPointer<NodeContainer> container;
+	LookupTable* lookup;
+	float* arr;
+	int size = 0;
+	int position = 0;
+
+
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
