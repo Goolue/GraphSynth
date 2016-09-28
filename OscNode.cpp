@@ -91,7 +91,6 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 		float floorVal = toReadFrom[currPosition];
 		float ceilVal = toReadFrom[currPosition + 1];
 		float val = interpolateValues(ratio, floorVal, ceilVal);
-		DBG(val);
 		toWriteTo[i] = val;
 		position += ratio;
 	}

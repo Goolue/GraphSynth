@@ -52,6 +52,12 @@ public:
 	virtual void prepareToPlay(int sampleRate, int buffSize); //this gets overridden!
 	virtual ReferenceCountedBuffer::Ptr process();
 
+	class NodeComperator
+	{
+	public:
+		static int compareElements(Node* first, Node* second);
+	};
+
 protected:
 	ReferenceCountedBuffer::Ptr takePrevBuff() const; //ask for a buffer from prev
 	Node* next{ nullptr };

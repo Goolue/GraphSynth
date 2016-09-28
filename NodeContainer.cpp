@@ -80,6 +80,24 @@ void NodeContainer::resized()
 		BTN_WIDTH, BTN_HIGHT);
 }
 
+void NodeContainer::paint(Graphics& g)
+{
+	//base::paint(g);
+	g.setColour(Colours::black);
+	for (Node* node : *refCountedArr)
+	{
+		if (node->getPrev() != nullptr)
+		{
+			Node* prev = node->getPrev();
+			Line<float> line;
+			line.setStart(getNodeRightX(prev), getNodeY(prev));
+			line.setEnd(getNodeLeftX(node), getNodeY(node));
+
+			g.drawArrow(line, 1, 2, 1);
+		}
+	}
+}
+
 void NodeContainer::deleteFromArray(Node* obj)
 {
 	//TODO: this
@@ -96,8 +114,31 @@ Node* NodeContainer::addToArray(Node* const toAdd)
 
 	refCountedArr->add(toAdd);
 	addAndMakeVisible(toAdd);
+	toAdd->setTopRightPosition(getWidth(), 0);
 	repaint();
 	return toAdd;
+}
+
+int NodeContainer::getNodeLeftX(Node* node)
+{
+	return node->getX();
+}
+
+int NodeContainer::getNodeRightX(Node* node)
+{
+	return node->getX() + node->getWidth();
+}
+
+int NodeContainer::getNodeY(Node* node)
+{
+	return node->getY() + (node->getHeight() * 0.5);
+}
+
+void NodeContainer::sort()
+{
+	refCountedArr->sort(comperator, true);
+
+	repaint();
 }
 
 ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode()

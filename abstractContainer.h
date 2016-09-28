@@ -60,6 +60,8 @@ public:
 	virtual void deleteFromArray(ObjectType* obj) = 0;
 	virtual ObjectType* addToArray(ObjectType* const toAdd) = 0;
 
+	virtual void sort() = 0;
+
 protected:
 	//funcs:
 	virtual void starPlaying()

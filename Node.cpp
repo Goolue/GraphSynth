@@ -41,6 +41,10 @@ void Node::mouseDrag(const MouseEvent& event)
 	if (constrainer != nullptr)
 	{
 		dragger.dragComponent(this, event, constrainer);
+		if (container != nullptr)
+		{
+			container->sort();
+		}
 	}
 }
 
@@ -149,6 +153,21 @@ void Node::prepareToPlay(int sampleRate, int buffSize)
 ReferenceCountedBuffer::Ptr Node::process()
 {
 	return nullptr;
+}
+
+int Node::NodeComperator::compareElements(Node* first, Node* second)
+{
+	int firstX = first->getX();
+	int secX = second->getX();
+	if (firstX > secX)
+	{
+		return 1;
+	}
+	else if (firstX < secX)
+	{
+		return -1;
+	}
+	return 0;
 }
 
 void Node::paintCircle(Colour* colour, Graphics& g) const
