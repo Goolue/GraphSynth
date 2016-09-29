@@ -4,10 +4,12 @@
 
 LookupTable::LookupTable(int rate, int size) : sampleRate(rate), buffSize(size)
 {
+	fillAllArrs();
 }
 
 LookupTable::LookupTable(int rate, int size, float freq) : sampleRate(rate), buffSize(size)
 {
+	fillAllArrs();
 }
 
 LookupTable::~LookupTable()
@@ -37,8 +39,6 @@ void LookupTable::reset(OscType type)
 	{
 		position = 0;
 		setType(type);
-		calcDelta();
-		fillArr(type);
 	}
 }
 
@@ -106,9 +106,36 @@ void LookupTable::setBufferSize(int buff_size)
 	buffSize = buff_size;
 }
 
+String LookupTable::oscTypeToString(OscType type)
+{
+	switch (type)
+	{
+	case OscType::Sine: return			"Sine";
+	case OscType::Square: return		"Square";
+	case OscType::Triangle: return		"Triangle";
+	case OscType::Saw: return			"Saw";
+	case OscType::ReverseSaw: return	"Reversed Saw";
+	case OscType::Noise: return			"Noise";
+	case OscType::Unset: return			"Unset";
+	default:
+		DBG("oscTypeToString has reached default!");
+		return "Null";
+	}
+}
+
 void LookupTable::calcDelta()
 {
 	sineDelta = 2.0 * double_Pi / LOOKUP_TABLE_ARR_SIZE;
+}
+
+void LookupTable::fillAllArrs()
+{
+	calcDelta();
+	OscType typeArr[] = { OscType::Sine, OscType::Square, OscType::Triangle, OscType::Saw, OscType::ReverseSaw };
+	for (OscType oscType : typeArr)
+	{
+		fillArr(oscType);
+	}
 }
 
 void LookupTable::fillArr()
@@ -125,6 +152,7 @@ void LookupTable::fillArr(OscType type)
 	{
 	case OscType::Sine:			return fillSineArr();
 	case OscType::Square:		return fillSqrArr();
+	case OscType::Triangle:		return fillTriangleArr();
 	case OscType::Saw:			return fillSawArr();
 	case OscType::ReverseSaw:	return fillReverseSawArr();
 	default: 
@@ -161,6 +189,28 @@ void LookupTable::fillSqrArr()
 	}
 }
 
+void LookupTable::fillTriangleArr()
+{
+	float slope = static_cast<float>(4.f / LOOKUP_TABLE_ARR_SIZE);
+	double phase = 0;
+	int polarity = 1;
+	float initValue = 0.f;
+	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
+	{
+		triangleArr[i] = initValue;
+		phase += sineDelta;
+		if (phase > double_Pi * 0.5 && phase < double_Pi * 1.5)
+		{
+			polarity = -1;
+		}
+		else
+		{
+			polarity = 1;
+		}
+		initValue += slope * polarity;
+	}
+}
+
 void LookupTable::fillSawArr()
 {
 	sawFillHelper(1, 0, sawArr);
@@ -173,21 +223,19 @@ void LookupTable::fillReverseSawArr()
 
 void LookupTable::sawFillHelper(int slopePolarity, float initValue, float (&arr)[LOOKUP_TABLE_ARR_SIZE]) const
 {
-	float slope = slopePolarity * static_cast<float>(4.f / LOOKUP_TABLE_ARR_SIZE);
+	float slope = slopePolarity * static_cast<float>(2.f / LOOKUP_TABLE_ARR_SIZE);
 	double phase = 0;
 	int polarity = 1;
+	bool flipped = false;
 	for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
 	{
 		arr[i] = initValue;
-		//DBG(initValue);
 		phase += sineDelta;
-		if (phase > double_Pi * 0.5 && phase < double_Pi * 1.5)
+		if (!flipped && phase > double_Pi)
 		{
+			flipped = true;
 			polarity = -1;
-		}
-		else
-		{
-			polarity = 1;
+			initValue *= -1;
 		}
 		initValue += slope * polarity;
 	}

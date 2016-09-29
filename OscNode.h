@@ -15,7 +15,6 @@ public:
 	void setType(OscType oscType);
 	float getFrequency() const;
 	void setFrequency(float freq);
-	static String oscTypeToString(OscType type);
 
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
 	void sliderValueChanged(Slider* slider) override;

@@ -22,7 +22,7 @@ OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(
 
 	addAndMakeVisible(typeComboBox = new ComboBox("Type ComboBox"));
 	typeComboBox->addListener(listener);
-	typeComboBox->addItemList({ "Sine", "Square", "Saw", "Reversed Saw", "Noise" }, 1);
+	typeComboBox->addItemList({ "Sine", "Square", "Triangle", "Saw", "Reversed Saw", "Noise" }, 1);
 	typeComboBox->setSelectedId(0, false);
 	typeComboBox->setText("Oscilator type", dontSendNotification);
 	typeComboBox->setLookAndFeel(lookAndFeel);

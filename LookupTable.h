@@ -8,6 +8,7 @@ enum class OscType
 	Unset,
 	Sine,
 	Square,
+	Triangle,
 	Saw,
 	ReverseSaw,
 	Noise
@@ -35,6 +36,7 @@ public:
 	void setSampleRate(int sample_rate);
 	int getBufferSize() const;
 	void setBufferSize(int buff_size);
+	static String oscTypeToString(OscType type);
 
 	void fillArr();
 	void fillArr(OscType type);
@@ -42,9 +44,11 @@ public:
 private:
 	//funcs:
 	void calcDelta();
+	void fillAllArrs();
 
 	void fillSineArr();
 	void fillSqrArr();
+	void fillTriangleArr();
 	void fillSawArr();
 	void fillReverseSawArr();
 	void sawFillHelper(int slopePolarity, float initValut, float(&arr)[LOOKUP_TABLE_ARR_SIZE]) const;
@@ -58,6 +62,7 @@ private:
 
 	float sineArr[LOOKUP_TABLE_ARR_SIZE];
 	float sqaureArr[LOOKUP_TABLE_ARR_SIZE];
+	float triangleArr[LOOKUP_TABLE_ARR_SIZE];
 	float sawArr[LOOKUP_TABLE_ARR_SIZE];
 	float reverseSawArr[LOOKUP_TABLE_ARR_SIZE];
 

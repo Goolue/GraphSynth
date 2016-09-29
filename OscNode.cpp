@@ -40,22 +40,6 @@ void OscNode::setFrequency(float freq)
 	frequency = freq;
 }
 
-String OscNode::oscTypeToString(OscType type)
-{
-	switch (type)
-	{
-	case OscType::Sine: return			"Sine";
-	case OscType::Square: return		"Square";
-	case OscType::Saw: return			"Saw";
-	case OscType::ReverseSaw: return	"Reversed Saw";
-	case OscType::Noise: return			"Noise";
-	case OscType::Unset: return			"Unset";
-	default:
-		DBG("oscTypeToString has reached default!");
-		return "Null";
-	}
-}
-
 void OscNode::sliderValueChanged(Slider* slider)
 {
 	if (slider->getName().equalsIgnoreCase("Volume Slider"))
@@ -80,11 +64,13 @@ void OscNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 			break;
 		case 1: selected = OscType::Square;
 			break;
-		case 2: selected = OscType::Saw;
+		case 2: selected = OscType::Triangle;
 			break;
-		case 3: selected = OscType::ReverseSaw;
+		case 3: selected = OscType::Saw;
 			break;
-		case 4: selected = OscType::Noise;
+		case 4: selected = OscType::ReverseSaw;
+			break;
+		case 5: selected = OscType::Noise;
 			break;
 		}
 		setType(selected);
@@ -106,7 +92,7 @@ void OscNode::makeTable()
 void OscNode::makeTable(OscType type)
 {
 	this->type = type;
-	if (type != OscType::Unset)
+	if (type != OscType::Unset && type != OscType::Noise)
 	{
 		lookupTable->reset(type);
 	}
