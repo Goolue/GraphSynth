@@ -7,29 +7,23 @@ Each Node is contained inside a NodeContainer (which holds many Nodes)*/
 #include "ReferenceCountedBuffer.h"
 #include "abstractContainer.h" //used to avoid circular dependencies 
 
-enum class OscType
-{
-	Unset,
-	Sine,
-	Square,
-	Saw,
-	ReverseSaw,
-	Noise
-};
-
-class Node :public ReferenceCountedObject, public Component, public MouseListener
+class Node
+	: public ReferenceCountedObject, public Component, public MouseListener,
+	public SliderListener, public ComboBoxListener
 {
 public:
-
 	Node(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer);
 	~Node();
 
 	void init();
 
 	void paint(Graphics& g) override;
-	void mouseDown(const MouseEvent& event) override;
+	virtual void mouseDown(const MouseEvent& event) override;
 	void mouseDrag(const MouseEvent& event) override;
 	void resized() override;
+
+	virtual void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override = 0;
+	virtual void sliderValueChanged(Slider* slider) override = 0;
 
 	bool equals(Node& other) const;
 
@@ -49,9 +43,12 @@ public:
 	void checkIfSet();
 	bool getIsSet() const;
 
+	static float limit(float value);
+
 	virtual void prepareToPlay(int sampleRate, int buffSize); //this gets overridden!
 	virtual ReferenceCountedBuffer::Ptr process();
 
+	//This class is used in order to compare different Nodes and sort them
 	class NodeComperator
 	{
 	public:

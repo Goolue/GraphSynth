@@ -1,17 +1,8 @@
-/*
-  ==============================================================================
-
-    This file was auto-generated!
-
-  ==============================================================================
-*/
-
-#include "NodeContainer.h"
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Node.h"
+#include "NodeContainer.h"
 
 
 //==============================================================================

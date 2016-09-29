@@ -2,6 +2,7 @@
 
 #define NUM_COLOURS 139
 #define BACKGROUND_COLOUR Colours::white
+#define LABLE_COLOUR Colours::black
 #define MAX_NUM_32_BIT 0x7FFFFFFF
 
 Node::Node(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer)
@@ -34,6 +35,8 @@ void Node::paint(Graphics& g)
 void Node::mouseDown(const MouseEvent& event)
 {
 	dragger.startDraggingComponent(this, event);
+	auto controller = container->getNodeController(id);
+	container->displayComponent(controller);
 }
 
 void Node::mouseDrag(const MouseEvent& event)
@@ -43,7 +46,8 @@ void Node::mouseDrag(const MouseEvent& event)
 		dragger.dragComponent(this, event, constrainer);
 		if (container != nullptr)
 		{
-			container->sort();
+			container->setShouldSort(true);
+			container->notify();
 		}
 	}
 }
@@ -144,6 +148,19 @@ bool Node::getIsSet() const
 	return isSet;
 }
 
+float Node::limit(float value)
+{
+	if (value > 1)
+	{
+		return 1.f;
+	}
+	if (value < -1)
+	{
+		return -1.f;
+	}
+	return value;
+}
+
 void Node::prepareToPlay(int sampleRate, int buffSize)
 {
 	setSampleRate(sampleRate);
@@ -163,7 +180,7 @@ int Node::NodeComperator::compareElements(Node* first, Node* second)
 	{
 		return 1;
 	}
-	else if (firstX < secX)
+	if (firstX < secX)
 	{
 		return -1;
 	}
@@ -180,7 +197,7 @@ Colour* Node::randomColour() const
 {
 	Random rand;
 	Colour* toReturn = new Colour(static_cast<uint32> (rand.nextInt()));
-	if (*toReturn == BACKGROUND_COLOUR)
+	if (*toReturn == BACKGROUND_COLOUR || *toReturn == LABLE_COLOUR)
 	{
 		return randomColour();
 	}

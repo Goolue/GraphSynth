@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Node.h"
 #include "LookupTable.h"
 
 class OscNode : public Node
@@ -14,6 +15,10 @@ public:
 	void setType(OscType oscType);
 	float getFrequency() const;
 	void setFrequency(float freq);
+	static String oscTypeToString(OscType type);
+
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
+	void sliderValueChanged(Slider* slider) override;
 
 	void makeTable();
 	void makeTable(OscType type);
@@ -26,6 +31,6 @@ private:
 	//vars:
 	ScopedPointer<LookupTable> lookupTable{ nullptr }; //table used for wave synthesis
 	OscType type{ OscType::Unset };
-	float volume{ 0 };
-	float frequency{ 0 };
+	Atomic<float> volume{ 0 };
+	Atomic<float> frequency{ 0 };
 };

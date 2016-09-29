@@ -1,3 +1,4 @@
+#include "JuceHeader.h"
 #include "LookupTable.h"
 #include <math.h>
 

@@ -1,4 +1,5 @@
 #include "NodeContainer.h"
+#include "OscNodeController.h"
 
 NodeContainer::NodeContainer()
 {
@@ -61,6 +62,26 @@ void NodeContainer::prepareToPlay(int samplesPerBlockExpected, double sampleRate
 	buffSize = samplesPerBlockExpected;
 }
 
+void NodeContainer::run()
+{
+	while (!threadShouldExit())
+	{
+		if (shouldSort)
+		{
+			shouldSort = false;
+			const MessageManagerLock mmLock;
+			sort(); //also repaints
+		}
+		else if (shouldRepaint)
+		{
+			shouldRepaint = false;
+			const MessageManagerLock mmLock;
+			repaint();
+		}
+		wait(-1);
+	}
+}
+
 void NodeContainer::buttonClicked(Button* btn)
 {
 	base::buttonClicked(btn);
@@ -100,7 +121,12 @@ void NodeContainer::paint(Graphics& g)
 
 void NodeContainer::deleteFromArray(Node* obj)
 {
-	//TODO: this
+	if (obj != nullptr)
+	{
+		refCountedArr->removeObject(obj);
+	}
+	shouldSort = true;
+	notify();
 }
 
 Node* NodeContainer::addToArray(Node* const toAdd)
@@ -115,8 +141,19 @@ Node* NodeContainer::addToArray(Node* const toAdd)
 	refCountedArr->add(toAdd);
 	addAndMakeVisible(toAdd);
 	toAdd->setTopRightPosition(getWidth(), 0);
-	repaint();
+	shouldRepaint = true;
+	notify();
 	return toAdd;
+}
+
+Component* NodeContainer::getNodeController(int id) const
+{
+	return idToControllerMap[id];
+}
+
+void NodeContainer::setBoundsForController(Component* controller)
+{
+	controller->setBounds(addFxBtn->getX() + addFxBtn->getWidth() + 5, addFxBtn->getY(), 500, 30);
 }
 
 int NodeContainer::getNodeLeftX(Node* node)
@@ -137,7 +174,29 @@ int NodeContainer::getNodeY(Node* node)
 void NodeContainer::sort()
 {
 	refCountedArr->sort(comperator, true);
+	int size = refCountedArr->size();
+	for (int i = 0; i < size; ++i)
+	{
+		Node* curr = refCountedArr->getUnchecked(i);
+		if (i > 0)
+		{
+			curr->setPrev(refCountedArr->getUnchecked(i - 1));
+		}
+		else
+		{
+			curr->setPrev(nullptr);
+		}
 
+		if (i < size - 1)
+		{
+			curr->setNext(refCountedArr->getUnchecked(i + 1));
+		}
+		else
+		{
+			curr->setNext(nullptr);
+		}
+	}
+	shouldRepaint = false;
 	repaint();
 }
 
@@ -148,11 +207,17 @@ ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode()
 
 ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
 {
-	ReferenceCountedObjectPtr<OscNode> node = new OscNode(id, &constrainter, this, type);
+	ReferenceCountedObjectPtr<OscNode> node = new OscNode(id.value, &constrainter, this, type);
 	node->setBuffSize(buffSize);
 	node->setSampleRate(sampleRate);
 	node->setFrequency(440);
 	node->makeTable(OscType::Saw, buffSize, sampleRate);
 	addToArray(node);
+
+	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OscNodeController(node);
+	idToControllerMap.set(id.value, controller);
+
+	++id; //id is atomic!
+
 	return node;
 }

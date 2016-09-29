@@ -23,17 +23,72 @@ OscType OscNode::getType() const
 
 void OscNode::setType(OscType oscType)
 {
-	type = oscType;
+	if (type != oscType)
+	{
+		type = oscType;
+		makeTable(type);
+	}
 }
 
 float OscNode::getFrequency() const
 {
-	return frequency;
+	return frequency.value;
 }
 
 void OscNode::setFrequency(float freq)
 {
 	frequency = freq;
+}
+
+String OscNode::oscTypeToString(OscType type)
+{
+	switch (type)
+	{
+	case OscType::Sine: return			"Sine";
+	case OscType::Square: return		"Square";
+	case OscType::Saw: return			"Saw";
+	case OscType::ReverseSaw: return	"Reversed Saw";
+	case OscType::Noise: return			"Noise";
+	case OscType::Unset: return			"Unset";
+	default:
+		DBG("oscTypeToString has reached default!");
+		return "Null";
+	}
+}
+
+void OscNode::sliderValueChanged(Slider* slider)
+{
+	if (slider->getName().equalsIgnoreCase("Volume Slider"))
+	{
+		volume = slider->getValue();
+	}
+	else if (slider->getName().equalsIgnoreCase("Frequency Slider"))
+	{
+		frequency = slider->getValue();
+	}
+}
+
+void OscNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
+{
+	if (comboBoxThatHasChanged->getName().equalsIgnoreCase("Type ComboBox"));
+	{
+		int index = comboBoxThatHasChanged->getSelectedItemIndex();
+		OscType selected = OscType::Unset;
+		switch (index)
+		{
+		case 0: selected = OscType::Sine;
+			break;
+		case 1: selected = OscType::Square;
+			break;
+		case 2: selected = OscType::Saw;
+			break;
+		case 3: selected = OscType::ReverseSaw;
+			break;
+		case 4: selected = OscType::Noise;
+			break;
+		}
+		setType(selected);
+	}
 }
 
 void OscNode::makeTable()
@@ -83,15 +138,15 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
 	const float* toReadFrom = lookupTable->getArray();
 	double position = lookupTable->getPosition();
-	double ratio = (frequency / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
+	double ratio = (frequency.value / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
 	int currPosition = static_cast<int>(position);
 	for (int i = 0; i < buffSize; ++i)
 	{
 		currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
 		float floorVal = toReadFrom[currPosition];
 		float ceilVal = toReadFrom[currPosition + 1];
-		float val = interpolateValues(ratio, floorVal, ceilVal);
-		toWriteTo[i] = val;
+		float val = interpolateValues(ratio, floorVal, ceilVal) * volume.value;
+		toWriteTo[i] = limit(val + toWriteTo[i]);
 		position += ratio;
 	}
 	lookupTable->setPosition(currPosition);

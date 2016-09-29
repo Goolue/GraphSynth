@@ -5,11 +5,10 @@
 #define BTN_HIGHT 30
 
 template <class ObjectType>
-class abstractContainer : public AudioAppComponent, public ButtonListener
+class abstractContainer : public AudioAppComponent, public ButtonListener, public Thread
 {
 public:
-
-	abstractContainer()
+	abstractContainer() : Thread("container thread")
 	{
 		static_assert(std::is_base_of < ReferenceCountedObject, ObjectType >::value,
 			"The template class must inherite from ReferenceCountedObject.");
@@ -21,6 +20,13 @@ public:
 		onBtn->setButtonText("On / Off");
 		onBtn->setEnabled(true);
 		onBtn->addListener(this);
+
+		startThread();
+	}
+
+	~abstractContainer()
+	{
+		stopThread(1000);
 	}
 
 	bool getIsPlaying() const
@@ -35,6 +41,7 @@ public:
 		onBtn = nullptr;
 	}
 	virtual void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override = 0;
+	virtual void run() override = 0;
 
 	virtual void buttonClicked(Button* btn) override
 	{
@@ -52,6 +59,18 @@ public:
 	}
 	virtual void resized() override = 0;
 
+	virtual Component* getNodeController(int id) const = 0;
+	virtual void displayComponent(Component* toDisplay)
+	{
+		if (currController != nullptr)
+		{
+			removeChildComponent(currController);
+		}
+		currController = toDisplay;
+		addAndMakeVisible(currController);
+		setBoundsForController(toDisplay);
+	}
+
 	ComponentBoundsConstrainer* getBoundsConstrainter()
 	{
 		return &constrainter;
@@ -61,6 +80,11 @@ public:
 	virtual ObjectType* addToArray(ObjectType* const toAdd) = 0;
 
 	virtual void sort() = 0;
+
+	virtual void setShouldSort(bool sort)
+	{
+		shouldSort = sort;
+	}
 
 protected:
 	//funcs:
@@ -82,14 +106,17 @@ protected:
 			}
 		}
 	}
+	virtual void setBoundsForController(Component* controller) = 0;
 
 	//vars:
-	int id{ 0 };
+	Atomic<int> id{ 0 };
 
 	ScopedPointer<ReferenceCountedArray<ObjectType>> refCountedArr;
+	Component* currController{ nullptr }; //Component is used to avoid circular dependencies
 	
 	ScopedPointer<ToggleButton> onBtn;
 	ComponentBoundsConstrainer constrainter;
 	bool isPlaying{ false };
-
+	bool shouldSort{ false };
+	bool shouldRepaint{ false };
 };

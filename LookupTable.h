@@ -1,9 +1,17 @@
 #pragma once
 
-#include "Node.h"
-
 #define LOOKUP_TABLE_ARR_SIZE 1024
 #define LOOKUP_TABLE_FREQUENCY 440 //Hz
+
+enum class OscType
+{
+	Unset,
+	Sine,
+	Square,
+	Saw,
+	ReverseSaw,
+	Noise
+};
 
 class LookupTable
 {
