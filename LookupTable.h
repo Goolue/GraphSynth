@@ -28,7 +28,7 @@ public:
 	OscType getType() const;
 	void setType(OscType type);
 
-	const float* getArray() const;
+	const Array<float>* getArray() const;
 	static int getArraySize();
 	int getPosition() const;
 	void setPosition(int pos);
@@ -51,7 +51,7 @@ private:
 	void fillTriangleArr();
 	void fillSawArr();
 	void fillReverseSawArr();
-	void sawFillHelper(int slopePolarity, float initValut, float(&arr)[LOOKUP_TABLE_ARR_SIZE]) const;
+	void sawFillHelper(int slopePolarity, float initValut, Array<float>* arr) const;
 
 	//vars:
 	OscType type{ OscType::Unset };
@@ -60,11 +60,19 @@ private:
 	int buffSize;
 	int position{ 0 };
 
-	float sineArr[LOOKUP_TABLE_ARR_SIZE];
+	/*float sineArr[LOOKUP_TABLE_ARR_SIZE];
 	float sqaureArr[LOOKUP_TABLE_ARR_SIZE];
 	float triangleArr[LOOKUP_TABLE_ARR_SIZE];
 	float sawArr[LOOKUP_TABLE_ARR_SIZE];
-	float reverseSawArr[LOOKUP_TABLE_ARR_SIZE];
+	float reverseSawArr[LOOKUP_TABLE_ARR_SIZE];*/
+
+	//ScopedPointer<OwnedArray<Array<float>>> mainArr;
+
+	Array<float> sineArr;
+	Array<float> squareArr;
+	Array<float> triangleArr;
+	Array<float> sawArr;
+	Array<float> reverseSawArr;
 
 	double frequency {0};
 	double sineDelta {0};

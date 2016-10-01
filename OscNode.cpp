@@ -9,6 +9,7 @@ OscNode::OscNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractCon
 
 OscNode::~OscNode()
 {
+	lookupTable = nullptr;
 }
 
 ReferenceCountedBuffer::Ptr OscNode::process()
@@ -135,15 +136,15 @@ void OscNode::makeTable(OscType type, int buffSize, int sampleRate)
 ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr buff) const
 {
 	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
-	const float* toReadFrom = lookupTable->getArray();
+	const Array<float>* toReadFrom = lookupTable->getArray();
 	double position = lookupTable->getPosition();
 	double ratio = (frequency.value / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
 	int currPosition = static_cast<int>(position);
 	for (int i = 0; i < buffSize; ++i)
 	{
 		currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
-		float floorVal = toReadFrom[currPosition];
-		float ceilVal = toReadFrom[currPosition + 1];
+		float floorVal = toReadFrom->getUnchecked(currPosition);
+		float ceilVal = toReadFrom->getUnchecked(currPosition + 1);
 		float val = interpolateValues(ratio, floorVal, ceilVal) * volume.value;
 		toWriteTo[i] = limit(val + toWriteTo[i]);
 		position += ratio;

@@ -58,6 +58,11 @@ void Node::mouseUp(const MouseEvent& event)
 	isMoving = false;
 }
 
+void Node::mouseDoubleClick(const MouseEvent& event)
+{
+	container->deleteFromArray(this);
+}
+
 void Node::resized()
 {
 	setRadius();

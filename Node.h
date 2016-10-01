@@ -22,6 +22,7 @@ public:
 	virtual void mouseDown(const MouseEvent& event) override;
 	void mouseDrag(const MouseEvent& event) override;
 	void mouseUp(const MouseEvent& event) override;
+	void mouseDoubleClick(const MouseEvent& event) override;
 	void resized() override;
 
 	virtual void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override = 0;
@@ -67,7 +68,7 @@ protected:
 	double buffSize; //is a double for ratio calculation accuracy
 	int numOfChannels{ 1 };
 
-	ScopedPointer<abstractContainer<Node>> container {nullptr};
+	abstractContainer<Node>* container {nullptr};
 
 private:
 	//funcs:

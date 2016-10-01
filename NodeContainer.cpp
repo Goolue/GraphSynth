@@ -93,7 +93,6 @@ void NodeContainer::buttonClicked(Button* btn)
 
 void NodeContainer::resized()
 {
-	//Dont forget adding onBtn here!
 	onBtn->setBounds(0, 0, BTN_WIDTH, BTN_HIGHT);
 	addOscBtn->setBounds(onBtn->getX() + onBtn->getWidth(), onBtn->getY(),
 		BTN_WIDTH, BTN_HIGHT);
