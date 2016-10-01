@@ -34,6 +34,7 @@ void Node::paint(Graphics& g)
 
 void Node::mouseDown(const MouseEvent& event)
 {
+	isMoving = true;
 	dragger.startDraggingComponent(this, event);
 	auto controller = container->getNodeController(id);
 	container->displayComponent(controller);
@@ -50,6 +51,11 @@ void Node::mouseDrag(const MouseEvent& event)
 			container->notify();
 		}
 	}
+}
+
+void Node::mouseUp(const MouseEvent& event)
+{
+	isMoving = false;
 }
 
 void Node::resized()
@@ -133,6 +139,11 @@ void Node::setContainer(abstractContainer<Node>* nodeContainer)
 {
 	container = nullptr;
 	container = nodeContainer;
+}
+
+bool Node::getIsMoving() const
+{
+	return isMoving.load();
 }
 
 void Node::checkIfSet()

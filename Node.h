@@ -6,6 +6,7 @@ Each Node is contained inside a NodeContainer (which holds many Nodes)*/
 
 #include "ReferenceCountedBuffer.h"
 #include "abstractContainer.h" //used to avoid circular dependencies 
+#include <atomic>
 
 class Node
 	: public ReferenceCountedObject, public Component, public MouseListener,
@@ -20,6 +21,7 @@ public:
 	void paint(Graphics& g) override;
 	virtual void mouseDown(const MouseEvent& event) override;
 	void mouseDrag(const MouseEvent& event) override;
+	void mouseUp(const MouseEvent& event) override;
 	void resized() override;
 
 	virtual void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override = 0;
@@ -39,6 +41,7 @@ public:
 	int getSampleRate() const;
 	void setSampleRate(int rate);
 	void setContainer(abstractContainer<Node>* nodeContainer);
+	bool getIsMoving() const;
 
 	void checkIfSet();
 	bool getIsSet() const;
@@ -77,6 +80,7 @@ private:
 	ComponentBoundsConstrainer* constrainer;
 	ScopedPointer<Colour> nodeColour;
 
+	std::atomic<bool> isMoving{ false };
 
 	int id;
 	float circleRadius;

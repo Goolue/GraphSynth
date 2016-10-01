@@ -15,7 +15,15 @@ public:
 	void acrivateFreqSlider() const;
 
 private:
+	//funcs:
+	static void labelSetup(Label* lbl);
+
+	//vars
 	ScopedPointer<Slider> volumeSlider;
 	ScopedPointer<Slider> freqSlider;
 	ScopedPointer<ComboBox> typeComboBox;
+
+	ScopedPointer<Label> volumeLbl;
+	ScopedPointer<Label> freqLbl;
+	ScopedPointer<Label> typeLbl;
 };

@@ -103,18 +103,17 @@ void NodeContainer::resized()
 
 void NodeContainer::paint(Graphics& g)
 {
-	//base::paint(g);
 	g.setColour(Colours::black);
 	for (Node* node : *refCountedArr)
 	{
-		if (node->getPrev() != nullptr)
+		Node* prev = node->getPrev();
+		if (prev != nullptr)
 		{
-			Node* prev = node->getPrev();
 			Line<float> line;
 			line.setStart(getNodeRightX(prev), getNodeY(prev));
 			line.setEnd(getNodeLeftX(node), getNodeY(node));
 
-			g.drawArrow(line, 1, 2, 1);
+			g.drawArrow(line, 3, 10, 10);
 		}
 	}
 }
@@ -153,7 +152,7 @@ Component* NodeContainer::getNodeController(int id) const
 
 void NodeContainer::setBoundsForController(Component* controller)
 {
-	controller->setBounds(addFxBtn->getX() + addFxBtn->getWidth() + 5, addFxBtn->getY(), 500, 30);
+	controller->setBounds(addFxBtn->getX() + addFxBtn->getWidth() + 5, addFxBtn->getY(), 500, 70);
 }
 
 int NodeContainer::getNodeLeftX(Node* node)

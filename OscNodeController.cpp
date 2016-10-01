@@ -23,9 +23,17 @@ OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(
 	addAndMakeVisible(typeComboBox = new ComboBox("Type ComboBox"));
 	typeComboBox->addListener(listener);
 	typeComboBox->addItemList({ "Sine", "Square", "Triangle", "Saw", "Reversed Saw", "Noise" }, 1);
-	typeComboBox->setSelectedId(0, false);
-	typeComboBox->setText("Oscilator type", dontSendNotification);
+	typeComboBox->setSelectedId(1, false);
 	typeComboBox->setLookAndFeel(lookAndFeel);
+
+	addAndMakeVisible(volumeLbl = new Label("volume label", "Volume"));
+	labelSetup(volumeLbl);
+
+	addAndMakeVisible(freqLbl = new Label("freq label", "Frequency"));
+	labelSetup(freqLbl);
+
+	addAndMakeVisible(typeLbl = new Label("type label", "Type"));
+	labelSetup(typeLbl);
 
 	setSize(500, 100);
 }
@@ -36,9 +44,15 @@ OscNodeController::~OscNodeController()
 
 void OscNodeController::resized()
 {
-	volumeSlider->setBounds(0, 0, SLIDER_WIDTH, SLIDER_HIGHT);
-	freqSlider->setBounds(volumeSlider->getX() + volumeSlider->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
-	typeComboBox->setBounds(freqSlider->getX() + freqSlider->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
+	volumeLbl->setBounds(0, 0, SLIDER_WIDTH, SLIDER_HIGHT);
+	volumeSlider->setBounds(volumeLbl->getX(), volumeLbl->getY() + volumeLbl->getHeight() + 5,
+		SLIDER_WIDTH, SLIDER_HIGHT);
+	freqLbl->setBounds(volumeLbl->getX() + volumeLbl->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
+	freqSlider->setBounds(freqLbl->getX(), freqLbl->getY() + freqLbl->getHeight() + 5,
+		SLIDER_WIDTH, SLIDER_HIGHT);
+	typeLbl->setBounds(freqLbl->getX() + freqLbl->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
+	typeComboBox->setBounds(typeLbl->getX(), typeLbl->getY() + typeLbl->getHeight() + 5,
+		SLIDER_WIDTH, SLIDER_HIGHT);
 }
 
 void OscNodeController::deactivateFreqSlider() const
@@ -49,4 +63,15 @@ void OscNodeController::deactivateFreqSlider() const
 void OscNodeController::acrivateFreqSlider() const
 {
 	freqSlider->setEnabled(true);
+}
+
+void OscNodeController::labelSetup(Label* lbl)
+{
+	if (lbl != nullptr)
+	{
+		lbl->setFont(Font(15.00f, Font::plain));
+		lbl->setJustificationType(Justification::centred);
+		lbl->setEditable(false, false, false);
+		lbl->setColour(TextEditor::textColourId, Colours::black);
+	}
 }
