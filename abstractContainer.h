@@ -117,6 +117,7 @@ protected:
 	ScopedPointer<ToggleButton> onBtn;
 	ComponentBoundsConstrainer constrainter;
 	bool isPlaying{ false };
+
 	bool shouldSort{ false };
 	bool shouldRepaint{ false };
 };

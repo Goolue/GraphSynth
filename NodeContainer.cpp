@@ -121,6 +121,10 @@ void NodeContainer::deleteFromArray(Node* obj)
 {
 	if (obj != nullptr)
 	{
+		int id = obj->getId();
+		auto controller = getNodeController(id);
+		controller->setVisible(false);
+		idToControllerMap.remove(id);
 		refCountedArr->removeObject(obj);
 	}
 	shouldSort = true;

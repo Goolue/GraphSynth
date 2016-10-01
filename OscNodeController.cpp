@@ -23,7 +23,7 @@ OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(
 	addAndMakeVisible(typeComboBox = new ComboBox("Type ComboBox"));
 	typeComboBox->addListener(listener);
 	typeComboBox->addItemList({ "Sine", "Square", "Triangle", "Saw", "Reversed Saw", "Noise" }, 1);
-	typeComboBox->setSelectedId(1, false);
+	typeComboBox->setSelectedItemIndex(1);
 	typeComboBox->setLookAndFeel(lookAndFeel);
 
 	addAndMakeVisible(volumeLbl = new Label("volume label", "Volume"));

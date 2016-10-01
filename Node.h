@@ -9,7 +9,7 @@ Each Node is contained inside a NodeContainer (which holds many Nodes)*/
 #include <atomic>
 
 class Node
-	: public ReferenceCountedObject, public Component, public MouseListener,
+	: public ReferenceCountedObject, public Component,
 	public SliderListener, public ComboBoxListener
 {
 public:
