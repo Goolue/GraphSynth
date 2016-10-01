@@ -41,3 +41,12 @@ void OscNodeController::resized()
 	typeComboBox->setBounds(freqSlider->getX() + freqSlider->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
 }
 
+void OscNodeController::deactivateFreqSlider() const
+{
+	freqSlider->setEnabled(false);
+}
+
+void OscNodeController::acrivateFreqSlider() const
+{
+	freqSlider->setEnabled(true);
+}

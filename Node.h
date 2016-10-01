@@ -64,6 +64,8 @@ protected:
 	double buffSize; //is a double for ratio calculation accuracy
 	int numOfChannels{ 1 };
 
+	ScopedPointer<abstractContainer<Node>> container {nullptr};
+
 private:
 	//funcs:
 	void paintCircle(Colour* colour, Graphics& g) const;
@@ -75,7 +77,6 @@ private:
 	ComponentBoundsConstrainer* constrainer;
 	ScopedPointer<Colour> nodeColour;
 
-	ScopedPointer<abstractContainer<Node>> container {nullptr};
 
 	int id;
 	float circleRadius;

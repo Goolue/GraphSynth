@@ -25,7 +25,11 @@ public:
 private:
 	//funcs:
 	ReferenceCountedBuffer::Ptr generateBuff(ReferenceCountedBuffer::Ptr buff) const;
+	ReferenceCountedBuffer::Ptr generateNoise(ReferenceCountedBuffer::Ptr buff) const;
 	static float interpolateValues(double ratio, double floor, double ceil);
+
+	void setControllerToNoise() const;
+	void setControllerToNonNoise() const;
 
 	//vars:
 	ScopedPointer<LookupTable> lookupTable{ nullptr }; //table used for wave synthesis

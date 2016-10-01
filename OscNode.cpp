@@ -1,4 +1,5 @@
 #include "OscNode.h"
+#include "OscNodeController.h"
 
 OscNode::OscNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer,
 	OscType oscType) : Node(nodeId, constraint, nodeContainer)
@@ -12,7 +13,11 @@ OscNode::~OscNode()
 
 ReferenceCountedBuffer::Ptr OscNode::process()
 {
-	ReferenceCountedBuffer::Ptr buff = takePrevBuff();
+	auto buff = takePrevBuff();
+	if (type == OscType::Noise)
+	{
+		return generateNoise(buff);
+	}
 	return generateBuff(buff);
 }
 
@@ -27,6 +32,14 @@ void OscNode::setType(OscType oscType)
 	{
 		type = oscType;
 		makeTable(type);
+		if (type == OscType::Noise)
+		{
+			setControllerToNoise();
+		}
+		else
+		{
+			setControllerToNonNoise();
+		}
 	}
 }
 
@@ -139,8 +152,34 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 	return buff;
 }
 
+ReferenceCountedBuffer::Ptr OscNode::generateNoise(ReferenceCountedBuffer::Ptr buff) const
+{
+	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
+	juce::Random random;
+	for (int i = 0; i < buffSize; ++i)
+	{
+		float rand = random.nextFloat();
+		toWriteTo[i] += rand * volume.value;
+	}
+	return buff;
+}
+
 float OscNode::interpolateValues(double ratio, double floor, double ceil)
 {
 	float slope = ceil - floor;
 	return floor + ratio * slope;
+}
+
+void OscNode::setControllerToNoise() const
+{
+	//TODO: this is ugly
+	auto controller =  container->getNodeController(getId());
+	static_cast<OscNodeController*>(controller)->deactivateFreqSlider();
+}
+
+void OscNode::setControllerToNonNoise() const
+{
+	//TODO: this is ugly
+	auto controller = container->getNodeController(getId());
+	static_cast<OscNodeController*>(controller)->acrivateFreqSlider();
 }

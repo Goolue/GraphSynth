@@ -11,6 +11,9 @@ public:
 
 	void resized() override;
 
+	void deactivateFreqSlider() const;
+	void acrivateFreqSlider() const;
+
 private:
 	ScopedPointer<Slider> volumeSlider;
 	ScopedPointer<Slider> freqSlider;
