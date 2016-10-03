@@ -1,30 +1,22 @@
 #include "OscNodeController.h"
 
-#define SLIDER_WIDTH 100
-#define SLIDER_HIGHT 30
-
 OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(listener)
 {
-	lookAndFeel = new LookAndFeel_V3();
-
 	addAndMakeVisible(volumeSlider = new Slider(Slider::LinearHorizontal, Slider::TextBoxAbove));
 	volumeSlider->setName("Volume Slider");
 	volumeSlider->addListener(listener);
-	volumeSlider->setRange(0, 1, 0.01);
-	volumeSlider->setLookAndFeel(lookAndFeel);
+	volumeSlider->setRange(0, 1, 0.1);
 
 	addAndMakeVisible(freqSlider = new Slider(Slider::LinearHorizontal, Slider::TextBoxAbove));
 	freqSlider->setName("Frequency Slider");
 	freqSlider->addListener(listener);
 	freqSlider->setRange(40, 20000, 1);
 	freqSlider->setSkewFactor(2);
-	freqSlider->setLookAndFeel(lookAndFeel);
 
 	addAndMakeVisible(typeComboBox = new ComboBox("Type ComboBox"));
 	typeComboBox->addListener(listener);
 	typeComboBox->addItemList({ "Sine", "Square", "Triangle", "Saw", "Reversed Saw", "Noise" }, 1);
-	typeComboBox->setSelectedItemIndex(1);
-	typeComboBox->setLookAndFeel(lookAndFeel);
+	typeComboBox->setSelectedItemIndex(0);
 
 	addAndMakeVisible(volumeLbl = new Label("volume label", "Volume"));
 	labelSetup(volumeLbl);
@@ -45,14 +37,11 @@ OscNodeController::~OscNodeController()
 void OscNodeController::resized()
 {
 	volumeLbl->setBounds(0, 0, SLIDER_WIDTH, SLIDER_HIGHT);
-	volumeSlider->setBounds(volumeLbl->getX(), volumeLbl->getY() + volumeLbl->getHeight() + 5,
-		SLIDER_WIDTH, SLIDER_HIGHT);
-	freqLbl->setBounds(volumeLbl->getX() + volumeLbl->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
-	freqSlider->setBounds(freqLbl->getX(), freqLbl->getY() + freqLbl->getHeight() + 5,
-		SLIDER_WIDTH, SLIDER_HIGHT);
-	typeLbl->setBounds(freqLbl->getX() + freqLbl->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
-	typeComboBox->setBounds(typeLbl->getX(), typeLbl->getY() + typeLbl->getHeight() + 5,
-		SLIDER_WIDTH, SLIDER_HIGHT);
+	setComponentBoundsBelow(volumeSlider, volumeLbl);
+	setComponentBoundsRight(freqLbl, volumeLbl);
+	setComponentBoundsBelow(freqSlider, freqLbl);
+	setComponentBoundsRight(typeLbl, freqLbl);
+	setComponentBoundsBelow(typeComboBox, typeLbl);
 }
 
 void OscNodeController::deactivateFreqSlider() const
@@ -65,13 +54,3 @@ void OscNodeController::acrivateFreqSlider() const
 	freqSlider->setEnabled(true);
 }
 
-void OscNodeController::labelSetup(Label* lbl)
-{
-	if (lbl != nullptr)
-	{
-		lbl->setFont(Font(15.00f, Font::plain));
-		lbl->setJustificationType(Justification::centred);
-		lbl->setEditable(false, false, false);
-		lbl->setColour(TextEditor::textColourId, Colours::black);
-	}
-}

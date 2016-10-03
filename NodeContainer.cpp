@@ -1,5 +1,6 @@
 #include "NodeContainer.h"
 #include "OscNodeController.h"
+#include "OverdriveNodeController.h"
 
 NodeContainer::NodeContainer()
 {
@@ -7,9 +8,9 @@ NodeContainer::NodeContainer()
 	addOscBtn->setButtonText("Add new Oscilator Node");
 	addOscBtn->addListener(this);
 
-	addAndMakeVisible(addFxBtn = new TextButton);
-	addFxBtn->setButtonText("Add new FX Node");
-	addFxBtn->addListener(this);
+	addAndMakeVisible(addOverdriveBtn = new TextButton);
+	addOverdriveBtn->setButtonText("Add new Overdrive Node");
+	addOverdriveBtn->addListener(this);
 
 	setSize(500, 500);
 }
@@ -17,7 +18,7 @@ NodeContainer::NodeContainer()
 void NodeContainer::releaseResources()
 {
 	addOscBtn = nullptr;
-	addFxBtn = nullptr;
+	addOverdriveBtn = nullptr;
 	base::releaseResources();
 }
 
@@ -30,9 +31,9 @@ void NodeContainer::getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill
 	else
 	{
 		Node* last = refCountedArr->getLast();
-		last->checkIfSet();
+		/*last->checkIfSet();
 		if (last->getIsSet())
-		{
+		{*/
 			auto buff = last->process();
 			auto sampleBuff = buff->getAudioSampleBuffer();
 			int size = bufferToFill.buffer->getNumSamples();
@@ -48,11 +49,11 @@ void NodeContainer::getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill
 					toWriteTo[i] += toReadFrom[i % sampleBuffSize];
 				}
 			}
-		}
+		/*}
 		else
 		{
 			DBG("Node is not set!");
-		}
+		}*/
 	}
 }
 
@@ -89,6 +90,10 @@ void NodeContainer::buttonClicked(Button* btn)
 	{
 		createOscNode();
 	}
+	else if (btn == addOverdriveBtn)
+	{
+		createOverdriveNode();
+	}
 }
 
 void NodeContainer::resized()
@@ -96,7 +101,7 @@ void NodeContainer::resized()
 	onBtn->setBounds(0, 0, BTN_WIDTH, BTN_HIGHT);
 	addOscBtn->setBounds(onBtn->getX() + onBtn->getWidth(), onBtn->getY(),
 		BTN_WIDTH, BTN_HIGHT);
-	addFxBtn->setBounds(addOscBtn->getX() + addOscBtn->getWidth(), addOscBtn->getY(),
+	addOverdriveBtn->setBounds(addOscBtn->getX() + addOscBtn->getWidth(), addOscBtn->getY(),
 		BTN_WIDTH, BTN_HIGHT);
 }
 
@@ -155,7 +160,7 @@ Component* NodeContainer::getNodeController(int id) const
 
 void NodeContainer::setBoundsForController(Component* controller)
 {
-	controller->setBounds(addFxBtn->getX() + addFxBtn->getWidth() + 5, addFxBtn->getY(), 500, 70);
+	controller->setBounds(addOverdriveBtn->getX() + addOverdriveBtn->getWidth() + 5, addOverdriveBtn->getY(), 500, 70);
 }
 
 int NodeContainer::getNodeLeftX(Node* node)
@@ -217,6 +222,19 @@ ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
 	addToArray(node);
 
 	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OscNodeController(node);
+	idToControllerMap.set(id.value, controller);
+
+	++id; //id is atomic!
+
+	return node;
+}
+
+ReferenceCountedObjectPtr<OverdriveNode> NodeContainer::createOverdriveNode()
+{
+	ReferenceCountedObjectPtr<OverdriveNode> node = new OverdriveNode(id.value, &constrainter, this);
+	addToArray(node);
+
+	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OverdriveNodeController(node);
 	idToControllerMap.set(id.value, controller);
 
 	++id; //id is atomic!

@@ -3,6 +3,7 @@
 #include "OscNode.h"
 #include "abstractContainer.h"
 #include "AbstractNodeController.h"
+#include "OverdriveNode.h"
 
 typedef abstractContainer<Node> base;
 class NodeContainer : public abstractContainer<Node>
@@ -12,9 +13,10 @@ public:
 
 	ReferenceCountedObjectPtr<OscNode> createOscNode();
 	ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
+	ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
 
 	void releaseResources() override;
-	void NodeContainer::getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override;
+	void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override;
 	void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
 	
 	void run() override;
@@ -41,7 +43,9 @@ private:
 
 	//vars
 	ScopedPointer<TextButton> addOscBtn;
-	ScopedPointer<TextButton> addFxBtn;
+	ScopedPointer<TextButton> addOverdriveBtn;
+	ScopedPointer<TextButton> addReverbBtn;
+	ScopedPointer<TextButton> addFilterBtn;
 
 	HashMap<int, ReferenceCountedObjectPtr<AbstractNodeConroller>> idToControllerMap;
 

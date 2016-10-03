@@ -50,7 +50,7 @@ public:
 	static float limit(float value);
 
 	virtual void prepareToPlay(int sampleRate, int buffSize); //this gets overridden!
-	virtual ReferenceCountedBuffer::Ptr process();
+	virtual ReferenceCountedBuffer::Ptr process() = 0;
 
 	//This class is used in order to compare different Nodes and sort them
 	class NodeComperator

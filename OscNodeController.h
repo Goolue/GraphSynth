@@ -15,9 +15,6 @@ public:
 	void acrivateFreqSlider() const;
 
 private:
-	//funcs:
-	static void labelSetup(Label* lbl);
-
 	//vars
 	ScopedPointer<Slider> volumeSlider;
 	ScopedPointer<Slider> freqSlider;

@@ -183,11 +183,6 @@ void Node::prepareToPlay(int sampleRate, int buffSize)
 	setBuffSize(buffSize);
 }
 
-ReferenceCountedBuffer::Ptr Node::process()
-{
-	return nullptr;
-}
-
 int Node::NodeComperator::compareElements(Node* first, Node* second)
 {
 	int firstX = first->getX();
