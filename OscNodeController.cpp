@@ -5,7 +5,7 @@ OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(
 	addAndMakeVisible(volumeSlider = new Slider(Slider::LinearHorizontal, Slider::TextBoxAbove));
 	volumeSlider->setName("Volume Slider");
 	volumeSlider->addListener(listener);
-	volumeSlider->setRange(0, 1, 0.1);
+	volumeSlider->setRange(0, 1, 0.01);
 
 	addAndMakeVisible(freqSlider = new Slider(Slider::LinearHorizontal, Slider::TextBoxAbove));
 	freqSlider->setName("Frequency Slider");

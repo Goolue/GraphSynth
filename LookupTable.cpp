@@ -87,7 +87,7 @@ int LookupTable::getPosition() const
 
 void LookupTable::setPosition(int pos)
 {
-	position = 0;
+	position = pos;
 }
 
 int LookupTable::getSampleRate() const
@@ -135,12 +135,6 @@ void LookupTable::calcDelta()
 void LookupTable::fillAllArrs()
 {
 	calcDelta();
-	/*mainArr = new OwnedArray < Array<float> > ;
-	mainArr->add(&sineArr);
-	mainArr->add(&squareArr);
-	mainArr->add(&triangleArr);
-	mainArr->add(&sawArr);
-	mainArr->add(&reverseSawArr);*/
 
 	OscType typeArr[] = { OscType::Sine, OscType::Square, OscType::Triangle, OscType::Saw, OscType::ReverseSaw };
 	for (OscType oscType : typeArr)

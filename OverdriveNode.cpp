@@ -111,7 +111,7 @@ float OverdriveNode::calcTriangularDrive(float x) const
 float OverdriveNode::calcExponentialDrive(float x) const
 {
 	const float val = value.value;
-	const float out = pow(x, val);
+	const float out = pow(x, val) * 100;
 	if (x >= 0)
 	{
 		return out;

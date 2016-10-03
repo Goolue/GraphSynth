@@ -138,12 +138,12 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 	float* toWriteTo = buff->getAudioSampleBuffer()->getWritePointer(0);
 	const Array<float>* toReadFrom = lookupTable->getArray();
 	double position = lookupTable->getPosition();
-	double ratio = (frequency.value / LOOKUP_TABLE_FREQUENCY) * (LOOKUP_TABLE_ARR_SIZE / buffSize); //lookup table is based on 440Hz, 1024 samples
+	double ratio = (4 * frequency.value * LOOKUP_TABLE_ARR_SIZE) / (LOOKUP_TABLE_FREQUENCY * buffSize); //lookup table is based on 440Hz, 1024 samples
 	int currPosition = static_cast<int>(position);
 	for (int i = 0; i < buffSize; ++i)
 	{
 		currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
-		float floorVal = toReadFrom->getUnchecked(currPosition % LOOKUP_TABLE_ARR_SIZE);
+		float floorVal = toReadFrom->getUnchecked(currPosition);
 		float ceilVal = toReadFrom->getUnchecked((currPosition + 1) % LOOKUP_TABLE_ARR_SIZE);
 		float val = interpolateValues(ratio, floorVal, ceilVal) * volume.value;
 		toWriteTo[i] = limit(val + toWriteTo[i]);
