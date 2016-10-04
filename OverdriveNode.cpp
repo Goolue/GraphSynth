@@ -64,7 +64,8 @@ ReferenceCountedBuffer::Ptr OverdriveNode::process()
 			float* arr = sampleBuff->getWritePointer(channel);
 			for (int i = 0; i < size; ++i)
 			{
-				arr[i] = (this->*func)(arr[i]); //call func on arr[i]
+				float val = (this->*func)(arr[i]); //call func on arr[i]
+				arr[i] = val;
 			}
 		}
 	}
@@ -80,7 +81,7 @@ void OverdriveNode::fillMap()
 	typeToFunctionMap.set(OverdriveType::Root, &OverdriveNode::calcRootDrive);
 }
 
-float OverdriveNode::calcLinearDrive(float x) const
+float OverdriveNode::calcLinearDrive(const float x) const
 {
 	const float val = value.value;
 	if (x <= val && x >= -val)
@@ -94,7 +95,7 @@ float OverdriveNode::calcLinearDrive(float x) const
 	return -val;
 }
 
-float OverdriveNode::calcTriangularDrive(float x) const
+float OverdriveNode::calcTriangularDrive(const float x) const
 {
 	const float val = value.value;
 	if (x <= val && x >= -val)
@@ -108,10 +109,23 @@ float OverdriveNode::calcTriangularDrive(float x) const
 	return x - 2 * val;
 }
 
-float OverdriveNode::calcExponentialDrive(float x) const
+float OverdriveNode::calcExponentialDrive(const float x) const
 {
+	//TODO: this interpolation isn't smooth
 	const float val = value.value;
-	const float out = pow(x, val) * 100;
+	const int ceilVal = ceil(val);
+	float out = 0;
+	if (val == ceilVal) //val is a whole number
+	{
+		out = powf(x, val);
+	}
+	else
+	{
+		const int floorVal = floor(val);
+		const float reminder = val - floorVal;
+		const float toAdd = reminder * powf(x, ceilVal);
+		out = powf(x, floorVal) + toAdd; //interpolation
+	}
 	if (x >= 0)
 	{
 		return out;
@@ -119,7 +133,7 @@ float OverdriveNode::calcExponentialDrive(float x) const
 	return -1 * abs(out);
 }
 
-float OverdriveNode::calcRootDrive(float x) const
+float OverdriveNode::calcRootDrive(const float x) const
 {
 	const float val = value.value;
 	if (x >= 0)

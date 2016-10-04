@@ -52,10 +52,10 @@ private:
 
 	//funcs:
 	void fillMap();
-	float calcLinearDrive(float x) const;
-	float calcTriangularDrive(float x) const;
-	float calcExponentialDrive(float x) const;
-	float calcRootDrive(float x) const;
+	float calcLinearDrive(const float x) const;
+	float calcTriangularDrive(const float x) const;
+	float calcExponentialDrive(const float x) const;
+	float calcRootDrive(const float x) const;
 
 	//vars:
 	OverdriveType overdriveType{ OverdriveType::None };
