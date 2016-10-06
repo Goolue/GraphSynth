@@ -13,13 +13,48 @@ void ReverbNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 
 ReferenceCountedBuffer::Ptr ReverbNode::process()
 {
-	//TODO: this
-	return nullptr;
+	auto buff = takePrevBuff();
+	auto audioBuff = buff->getAudioSampleBuffer();
+	const int numCannels = audioBuff->getNumChannels();
+	const int size = audioBuff->getNumSamples();
+	for (int channel = 0; channel < numCannels; ++channel)
+	{
+		float* samples = audioBuff->getWritePointer(channel);
+		reverb.processMono(samples, size);
+	}
+	return buff;
 }
 
 void ReverbNode::sliderValueChanged(Slider* slider)
 {
-	//TODO: this
+	String name = slider->getName();
+	float val = slider->getValue();
+	if (name.equalsIgnoreCase("Reverb Room Slider"))
+	{
+		roomSize = val;
+		params.roomSize = roomSize;
+	}
+	else if (name.equalsIgnoreCase("Reverb Damping Slider"))
+	{
+		damping = val;
+		params.damping = damping;
+	}
+	else if (name.equalsIgnoreCase("Reverb Wet Slider"))
+	{
+		wetLevel = val;
+		params.wetLevel = wetLevel;
+	}
+	else if (name.equalsIgnoreCase("Reverb Dry Slider"))
+	{
+		dryLevel = val;
+		params.dryLevel = dryLevel;
+	}
+	else if (name.equalsIgnoreCase("Reverb Width Slider"))
+	{
+		width = val;
+		params.width = width;
+	}
+	reverb.setParameters(params);
 }
 
 void ReverbNode::setSampleRate(int rate)
@@ -34,5 +69,6 @@ void ReverbNode::buttonClicked(Button* btn)
 	{
 		freeze = btn->getToggleState();
 		params.freezeMode = freeze;
+		reverb.setParameters(params);
 	}
 }

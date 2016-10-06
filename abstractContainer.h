@@ -60,16 +60,6 @@ public:
 	virtual void resized() override = 0;
 
 	virtual Component* getNodeController(int id) const = 0;
-	virtual void displayComponent(Component* toDisplay)
-	{
-		if (currController != nullptr)
-		{
-			removeChildComponent(currController);
-		}
-		currController = toDisplay;
-		addAndMakeVisible(currController);
-		setBoundsForController(toDisplay);
-	}
 
 	ComponentBoundsConstrainer* getBoundsConstrainter()
 	{
@@ -84,6 +74,15 @@ public:
 	virtual void setShouldSort(bool sort)
 	{
 		shouldSort = sort;
+	}
+
+	Component* getCurrentController() const
+	{
+		return currController;
+	}
+	void setCurrController(Component* controller)
+	{
+		currController = controller;
 	}
 
 protected:
@@ -106,12 +105,13 @@ protected:
 			}
 		}
 	}
-	virtual void setBoundsForController(Component* controller) = 0;
+
 
 	//vars:
 	Atomic<int> id{ 0 };
 
 	ScopedPointer<ReferenceCountedArray<ObjectType>> refCountedArr;
+	//TODO: find a better way to handel currComponent!
 	Component* currController{ nullptr }; //Component is used to avoid circular dependencies
 	
 	ScopedPointer<ToggleButton> onBtn;

@@ -6,6 +6,8 @@
 #include "OverdriveNode.h"
 #include "ReverbNode.h"
 
+#define RIGHTMOST_BUTTON NodeContainer::addReverbBtn
+
 typedef abstractContainer<Node> base;
 class NodeContainer : public abstractContainer<Node>
 {
@@ -28,7 +30,8 @@ public:
 	Component* getNodeController(int id) const override;
 
 protected:
-	void setBoundsForController(Component* controller) override;
+	//funs:
+	void addContoller(AbstractNodeConroller* controller);
 
 	ReferenceCountedObjectPtr<OscNode> createOscNode();
 	ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);

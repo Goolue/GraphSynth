@@ -1,14 +1,19 @@
 #pragma once
 
 #include "AbstractNodeController.h"
+#include "ReverbNode.h"
 
 class ReverbController : public AbstractNodeConroller
 {
 public:
-	explicit ReverbController(Node* listener);
+	explicit ReverbController(ReverbNode* listener);
 	~ReverbController();
 
 	void resized() override;
+
+protected:
+	void setComponentBoundsBelow(Component* toSet, Component* reference) const override;
+	void setComponentBoundsRight(Component* toSet, Component* reference) const override;
 
 private:
 	ScopedPointer<Slider> roomSlider{ nullptr };

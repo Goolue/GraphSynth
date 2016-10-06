@@ -1,27 +1,32 @@
 #include "ReverbController.h"
 
-ReverbController::ReverbController(Node* listener)
+ReverbController::ReverbController(ReverbNode* listener)
 	: AbstractNodeConroller(listener)
 {
-	sliderSetup(&roomSlider, "Reverb Room Slider", Slider::RotaryHorizontalDrag,
+	sliderSetup(&roomSlider, "Reverb Room Slider", Slider::LinearHorizontal,
 		Slider::TextBoxAbove, listener);
 	roomSlider->setRange(0.0f, 1.0f, 0.01);
+	roomSlider->setValue(0.5);
 
-	sliderSetup(&dampingSlider, "Reverb Damping Slider", Slider::RotaryHorizontalDrag,
+	sliderSetup(&dampingSlider, "Reverb Damping Slider", Slider::LinearHorizontal,
 		Slider::TextBoxAbove, listener);
 	dampingSlider->setRange(0.0f, 1.0f, 0.01);
+	dampingSlider->setValue(0.5);
 
-	sliderSetup(&wetSlider, "Reverb Wet Slider", Slider::RotaryHorizontalDrag,
+	sliderSetup(&wetSlider, "Reverb Wet Slider", Slider::LinearHorizontal,
 		Slider::TextBoxAbove, listener);
 	wetSlider->setRange(0.0f, 1.0f, 0.01);
+	wetSlider->setValue(0.33f);
 
-	sliderSetup(&drySlider, "Reverb Dry Slider", Slider::RotaryHorizontalDrag,
+	sliderSetup(&drySlider, "Reverb Dry Slider", Slider::LinearHorizontal,
 		Slider::TextBoxAbove, listener);
 	drySlider->setRange(0.0f, 1.0f, 0.01);
+	drySlider->setValue(0.4);
 
-	sliderSetup(&widthSlider, "Reverb Width Slider", Slider::RotaryHorizontalDrag,
+	sliderSetup(&widthSlider, "Reverb Width Slider", Slider::LinearHorizontal,
 		Slider::TextBoxAbove, listener);
 	widthSlider->setRange(0.0f, 1.0f, 0.01);
+	widthSlider->setValue(1.0);
 
 	addAndMakeVisible(roomLbl = new Label("Reverb Room Label", "Room"));
 	labelSetup(roomLbl);
@@ -35,11 +40,13 @@ ReverbController::ReverbController(Node* listener)
 	addAndMakeVisible(dryLbl = new Label("Reverb Dry Label", "Dry"));
 	labelSetup(dryLbl);
 
-	addAndMakeVisible(widthLbl = new Label("Revferb Width Label", "Width"));
+	addAndMakeVisible(widthLbl = new Label("Reverb Width Label", "Width"));
 	labelSetup(widthLbl);
 
 	addAndMakeVisible(freezeBtn = new ToggleButton("Freeze Mode"));
+	freezeBtn->setName("Reverb freeze Button");
 	freezeBtn->setToggleState(false, false);
+	freezeBtn->addListener(listener);
 
 	setSize(700, 100);
 }
@@ -72,4 +79,14 @@ void ReverbController::resized()
 	setComponentBoundsBelow(drySlider, dryLbl);
 	setComponentBoundsRight(widthLbl, dryLbl);
 	setComponentBoundsBelow(widthSlider, widthLbl);
+}
+
+void ReverbController::setComponentBoundsBelow(Component* toSet, Component* reference) const
+{
+	toSet->setBounds(reference->getX(), reference->getY() + reference->getHeight(), SLIDER_WIDTH, SLIDER_HIGHT);
+}
+
+void ReverbController::setComponentBoundsRight(Component* toSet, Component* reference) const
+{
+	toSet->setBounds(reference->getX() + reference->getWidth(), reference->getY(), SLIDER_WIDTH, SLIDER_HIGHT);
 }

@@ -45,12 +45,12 @@ protected:
 		(*slider)->setName(name);
 		(*slider)->addListener(listener);
 	}
-	static void setComponentBoundsBelow(Component* toSetup, Component* reference)
+	virtual void setComponentBoundsBelow(Component* toSetup, Component* reference) const 
 	{
 		toSetup->setBounds(reference->getX(), reference->getY() + reference->getHeight() + 5,
 			SLIDER_WIDTH, SLIDER_HIGHT);
 	}
-	static void setComponentBoundsRight(Component* toSetup, Component* reference)
+	virtual void setComponentBoundsRight(Component* toSetup, Component* reference) const
 	{
 		toSetup->setBounds(reference->getX() + reference->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
 	}

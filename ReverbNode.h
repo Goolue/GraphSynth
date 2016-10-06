@@ -7,7 +7,7 @@ class ReverbNode : public FxNode, public ButtonListener
 public:
 	ReverbNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer);
 
-	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
+	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override; //does nothing here
 	ReferenceCountedBuffer::Ptr process() override;
 
 	void sliderValueChanged(Slider* slider) override;

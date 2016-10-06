@@ -173,9 +173,11 @@ Component* NodeContainer::getNodeController(int id) const
 	return idToControllerMap[id];
 }
 
-void NodeContainer::setBoundsForController(Component* controller)
+void NodeContainer::addContoller(AbstractNodeConroller* controller)
 {
-	controller->setBounds(addOverdriveBtn->getX() + addOverdriveBtn->getWidth() + 5, addOverdriveBtn->getY(), 500, 70);
+	controller->setTopLeftPosition(RIGHTMOST_BUTTON->getX() + RIGHTMOST_BUTTON->getWidth(), 0);
+	addChildComponent(controller);
+	controller->setVisible(false);
 }
 
 ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode()
@@ -192,6 +194,7 @@ ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
 	node->makeTable(OscType::Saw, buffSize, sampleRate);
 
 	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OscNodeController(node);
+	addContoller(controller);
 	idToControllerMap.set(id.value, controller);
 
 	addToArray(node);
@@ -204,9 +207,9 @@ ReferenceCountedObjectPtr<OverdriveNode> NodeContainer::createOverdriveNode()
 	ReferenceCountedObjectPtr<OverdriveNode> node = new OverdriveNode(id.value, &constrainter, this);
 
 	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OverdriveNodeController(node);
+	addContoller(controller);
+	
 	idToControllerMap.set(id.value, controller);
-	//controller->setSize(CONTROLLER_WIDTH, CONTROLLER_HIGHT);
-	controller->setBounds(addReverbBtn->getX() + addReverbBtn->getWidth() + 5, addReverbBtn->getY(), 400, 100);
 	addToArray(node);
 	
 	return node;
@@ -218,10 +221,8 @@ ReferenceCountedObjectPtr<ReverbNode> NodeContainer::createReverbNode()
 	node->setSampleRate(sampleRate);
 	
 	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new ReverbController(node);
-	controller->setTopLeftPosition(addReverbBtn->getX() + addReverbBtn->getWidth(), 0);
-	addChildComponent(controller);
-	controller->setVisible(false);
-	
+	addContoller(controller);
+
 	idToControllerMap.set(id.value, controller);
 
 	addToArray(node);

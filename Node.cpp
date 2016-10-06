@@ -37,7 +37,16 @@ void Node::mouseDown(const MouseEvent& event)
 	isMoving = true;
 	dragger.startDraggingComponent(this, event);
 	auto controller = container->getNodeController(id);
-	controller->setVisible(true);
+	auto currController = container->getCurrentController();
+	if (currController == nullptr || currController != controller)
+	{
+		if (currController != nullptr)
+		{
+			currController->setVisible(false);
+		}
+		controller->setVisible(true);
+		container->setCurrController(controller);
+	}
 }
 
 void Node::mouseDrag(const MouseEvent& event)
