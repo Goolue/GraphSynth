@@ -40,7 +40,7 @@ public:
 	int getBuffSize() const;
 	void setBuffSize(int size);
 	int getSampleRate() const;
-	void setSampleRate(int rate);
+	virtual void setSampleRate(int rate);
 	void setContainer(abstractContainer<Node>* nodeContainer);
 	bool getIsMoving() const;
 

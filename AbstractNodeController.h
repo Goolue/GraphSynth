@@ -6,7 +6,7 @@
 #define SLIDER_WIDTH 100
 #define SLIDER_HIGHT 30
 
-class AbstractNodeConroller : public Component, public ReferenceCountedObject
+class AbstractNodeConroller : public Component, public juce::ReferenceCountedObject
 {
 public:
 	explicit AbstractNodeConroller(Node* listener) : id (listener->getId()){}
@@ -38,6 +38,13 @@ protected:
 			lbl->setColour(TextEditor::textColourId, Colours::black);
 		}
 	}
+	//sets up and displays a slider. DOES NOT set range
+	void sliderSetup(ScopedPointer<Slider>* slider, const String name, Slider::SliderStyle style, Slider::TextEntryBoxPosition textBoxPosition, SliderListener* listener)
+	{
+		addAndMakeVisible(*slider = new Slider(style, textBoxPosition));
+		(*slider)->setName(name);
+		(*slider)->addListener(listener);
+	}
 	static void setComponentBoundsBelow(Component* toSetup, Component* reference)
 	{
 		toSetup->setBounds(reference->getX(), reference->getY() + reference->getHeight() + 5,
@@ -47,6 +54,7 @@ protected:
 	{
 		toSetup->setBounds(reference->getX() + reference->getWidth() + 5, 0, SLIDER_WIDTH, SLIDER_HIGHT);
 	}
+
 
 private:
 	int id; //always the same as the corresponing node

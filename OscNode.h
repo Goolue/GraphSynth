@@ -3,6 +3,7 @@
 #include "Node.h"
 #include "LookupTable.h"
 
+//TODO: fix freq slider value
 class OscNode : public Node
 {
 public:

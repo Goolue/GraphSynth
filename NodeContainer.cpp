@@ -1,6 +1,10 @@
 #include "NodeContainer.h"
 #include "OscNodeController.h"
 #include "OverdriveNodeController.h"
+#include "ReverbController.h"
+
+#define CONTROLLER_WIDTH 200
+#define CONTROLLER_HIGHT 80
 
 NodeContainer::NodeContainer()
 {
@@ -11,6 +15,10 @@ NodeContainer::NodeContainer()
 	addAndMakeVisible(addOverdriveBtn = new TextButton);
 	addOverdriveBtn->setButtonText("Add new Overdrive Node");
 	addOverdriveBtn->addListener(this);
+
+	addAndMakeVisible(addReverbBtn = new TextButton);
+	addReverbBtn->setButtonText("Add new Reverb Node");
+	addReverbBtn->addListener(this);
 
 	setSize(500, 500);
 }
@@ -94,6 +102,10 @@ void NodeContainer::buttonClicked(Button* btn)
 	{
 		createOverdriveNode();
 	}
+	else if (btn == addReverbBtn)
+	{
+		createReverbNode();
+	}
 }
 
 void NodeContainer::resized()
@@ -102,6 +114,8 @@ void NodeContainer::resized()
 	addOscBtn->setBounds(onBtn->getX() + onBtn->getWidth(), onBtn->getY(),
 		BTN_WIDTH, BTN_HIGHT);
 	addOverdriveBtn->setBounds(addOscBtn->getX() + addOscBtn->getWidth(), addOscBtn->getY(),
+		BTN_WIDTH, BTN_HIGHT);
+	addReverbBtn->setBounds(addOverdriveBtn->getX() + addOverdriveBtn->getWidth(), addOverdriveBtn->getY(),
 		BTN_WIDTH, BTN_HIGHT);
 }
 
@@ -148,6 +162,7 @@ Node* NodeContainer::addToArray(Node* const toAdd)
 	refCountedArr->add(toAdd);
 	addAndMakeVisible(toAdd);
 	toAdd->setTopRightPosition(getWidth(), 0);
+	++id; //id is atomic
 	shouldRepaint = true;
 	notify();
 	return toAdd;
@@ -161,6 +176,57 @@ Component* NodeContainer::getNodeController(int id) const
 void NodeContainer::setBoundsForController(Component* controller)
 {
 	controller->setBounds(addOverdriveBtn->getX() + addOverdriveBtn->getWidth() + 5, addOverdriveBtn->getY(), 500, 70);
+}
+
+ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode()
+{
+	return createOscNode(OscType::Sine);
+}
+
+ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
+{
+	ReferenceCountedObjectPtr<OscNode> node = new OscNode(id.value, &constrainter, this, type);
+	node->setBuffSize(buffSize);
+	node->setSampleRate(sampleRate);
+	node->setFrequency(440);
+	node->makeTable(OscType::Saw, buffSize, sampleRate);
+
+	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OscNodeController(node);
+	idToControllerMap.set(id.value, controller);
+
+	addToArray(node);
+	
+	return node;
+}
+
+ReferenceCountedObjectPtr<OverdriveNode> NodeContainer::createOverdriveNode()
+{
+	ReferenceCountedObjectPtr<OverdriveNode> node = new OverdriveNode(id.value, &constrainter, this);
+
+	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OverdriveNodeController(node);
+	idToControllerMap.set(id.value, controller);
+	//controller->setSize(CONTROLLER_WIDTH, CONTROLLER_HIGHT);
+	controller->setBounds(addReverbBtn->getX() + addReverbBtn->getWidth() + 5, addReverbBtn->getY(), 400, 100);
+	addToArray(node);
+	
+	return node;
+}
+
+ReferenceCountedObjectPtr<ReverbNode> NodeContainer::createReverbNode()
+{
+	ReferenceCountedObjectPtr<ReverbNode> node = new ReverbNode(id.value, &constrainter, this);
+	node->setSampleRate(sampleRate);
+	
+	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new ReverbController(node);
+	controller->setTopLeftPosition(addReverbBtn->getX() + addReverbBtn->getWidth(), 0);
+	addChildComponent(controller);
+	controller->setVisible(false);
+	
+	idToControllerMap.set(id.value, controller);
+
+	addToArray(node);
+
+	return node;
 }
 
 int NodeContainer::getNodeLeftX(Node* node)
@@ -205,39 +271,4 @@ void NodeContainer::sort()
 	}
 	shouldRepaint = false;
 	repaint();
-}
-
-ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode()
-{
-	return createOscNode(OscType::Sine);
-}
-
-ReferenceCountedObjectPtr<OscNode> NodeContainer::createOscNode(OscType type)
-{
-	ReferenceCountedObjectPtr<OscNode> node = new OscNode(id.value, &constrainter, this, type);
-	node->setBuffSize(buffSize);
-	node->setSampleRate(sampleRate);
-	node->setFrequency(440);
-	node->makeTable(OscType::Saw, buffSize, sampleRate);
-	addToArray(node);
-
-	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OscNodeController(node);
-	idToControllerMap.set(id.value, controller);
-
-	++id; //id is atomic!
-
-	return node;
-}
-
-ReferenceCountedObjectPtr<OverdriveNode> NodeContainer::createOverdriveNode()
-{
-	ReferenceCountedObjectPtr<OverdriveNode> node = new OverdriveNode(id.value, &constrainter, this);
-	addToArray(node);
-
-	ReferenceCountedObjectPtr<AbstractNodeConroller> controller = new OverdriveNodeController(node);
-	idToControllerMap.set(id.value, controller);
-
-	++id; //id is atomic!
-
-	return node;
 }

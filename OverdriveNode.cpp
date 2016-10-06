@@ -43,10 +43,13 @@ void OverdriveNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 
 void OverdriveNode::sliderValueChanged(Slider* slider)
 {
-	FxNode::sliderValueChanged(slider);
-	if (overdriveType == OverdriveType::Linear || overdriveType == OverdriveType::Triangular)
+	if (slider->getName().equalsIgnoreCase("Overdrive Value Slider"))
 	{
-		value = value.value * 0.1;
+		value = slider->getValue();
+		if (overdriveType == OverdriveType::Linear || overdriveType == OverdriveType::Triangular)
+		{
+			value = value.value * 0.1;
+		}
 	}
 }
 

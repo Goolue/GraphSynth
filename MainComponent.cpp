@@ -1,7 +1,7 @@
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 
-#include "../JuceLibraryCode/JuceHeader.h"
+//#include "../JuceLibraryCode/JuceHeader.h"
 #include "NodeContainer.h"
 
 
@@ -16,18 +16,8 @@ public:
     //==============================================================================
     MainContentComponent()
     {
-		/*const Rectangle<int> rect(0, 0, 800, 200);
-		node = new Node(1, constrainter);
-		addAndMakeVisible(node);*/
-
-
-		/*lookup = new LookupTable(44100, 441, 440);
-		lookup->reset(440, OscType::Sine);
-		arr = lookup->getArray();
-		size = lookup->getArraySize();*/
-
 		addAndMakeVisible(container = new NodeContainer);
-        setSize (800, 600);
+        setSize (1000, 1000);
 
         // specify the number of input and output channels that we want to open
         setAudioChannels (2, 2);
@@ -55,18 +45,6 @@ public:
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
 		container->getNextAudioBlock(bufferToFill);
-
-		/*int buffSize = bufferToFill.numSamples;
-		float* chan1 = bufferToFill.buffer->getWritePointer(0);
-		float* chan2 = bufferToFill.buffer->getWritePointer(1);
-		int i;
-	    for (i = 0; i < buffSize; ++i)
-	    {
-			float val = arr[i % size];
-			chan1[i] = val;
-			chan2[i] = val;
-	    }
-		position = i % size;*/
     }
 
     void releaseResources() override
@@ -88,7 +66,7 @@ public:
 
     void resized() override
     {
-		container->setBounds(0, 0, 800, 600);
+		container->setBounds(getBounds());
     }
 
 

@@ -18,7 +18,7 @@ public:
 
 	~OverdriveNode() override;
 	void comboBoxChanged(ComboBox* comboBoxThatHasChanged) override;
-	virtual void sliderValueChanged(Slider* slider) override;
+	void sliderValueChanged(Slider* slider) override;
 	ReferenceCountedBuffer::Ptr process() override;
 
 private:

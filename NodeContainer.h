@@ -4,16 +4,13 @@
 #include "abstractContainer.h"
 #include "AbstractNodeController.h"
 #include "OverdriveNode.h"
+#include "ReverbNode.h"
 
 typedef abstractContainer<Node> base;
 class NodeContainer : public abstractContainer<Node>
 {
 public:
 	NodeContainer();
-
-	ReferenceCountedObjectPtr<OscNode> createOscNode();
-	ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
-	ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
 
 	void releaseResources() override;
 	void getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill) override;
@@ -32,6 +29,11 @@ public:
 
 protected:
 	void setBoundsForController(Component* controller) override;
+
+	ReferenceCountedObjectPtr<OscNode> createOscNode();
+	ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
+	ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
+	ReferenceCountedObjectPtr<ReverbNode> createReverbNode();
 
 private:
 	//funcs:
