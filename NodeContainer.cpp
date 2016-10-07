@@ -142,8 +142,13 @@ void NodeContainer::deleteFromArray(Node* obj)
 	if (obj != nullptr)
 	{
 		int id = obj->getId();
+		if (static_cast<AbstractNodeConroller*>(currController)->getId() == id)
+		{
+			currController = nullptr;
+		}
 		auto controller = getNodeController(id);
-		controller->setVisible(false);
+		removeChildComponent(controller);
+		//controller->setVisible(false);
 		idToControllerMap.remove(id);
 		refCountedArr->removeObject(obj);
 	}
