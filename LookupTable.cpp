@@ -2,6 +2,8 @@
 #include "LookupTable.h"
 #include <math.h>
 
+typedef LookupTable::OscType OscType;
+
 LookupTable::LookupTable(int rate, int size) : sampleRate(rate), buffSize(size)
 {
 	fillAllArrs();
@@ -14,15 +16,6 @@ LookupTable::LookupTable(int rate, int size, float freq) : sampleRate(rate), buf
 
 LookupTable::~LookupTable()
 {
-	////TODO: find better solution than new -> delete
-	//delete[] sineArr;
-	//delete[] sqaureArr;
-	//delete[] sawArr;
-	//delete[] reverseSawArr;
-	/*for (auto arr : *mainArr)
-	{
-		arr->clear();
-	}*/
 }
 
 void LookupTable::reset()

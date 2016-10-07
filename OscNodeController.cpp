@@ -11,7 +11,8 @@ OscNodeController::OscNodeController(OscNode* listener) : AbstractNodeConroller(
 	freqSlider->setName("Frequency Slider");
 	freqSlider->addListener(listener);
 	freqSlider->setRange(40, 20000, 1);
-	freqSlider->setSkewFactor(2);
+	freqSlider->setValue(440);
+	freqSlider->setSkewFactor(0.5);
 
 	addAndMakeVisible(typeComboBox = new ComboBox("Type ComboBox"));
 	typeComboBox->addListener(listener);

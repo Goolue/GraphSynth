@@ -46,6 +46,7 @@ public:
 
 	void checkIfSet();
 	bool getIsSet() const;
+	void setMainLabelText(String text) const;
 
 	static float limit(float value);
 
@@ -60,6 +61,10 @@ public:
 	};
 
 protected:
+	//funcs:
+	virtual void changeMainLabelText(const String newText);
+
+	//vars:
 	ReferenceCountedBuffer::Ptr takePrevBuff() const; //ask for a buffer from prev
 	Node* next{ nullptr };
 	Node* prev{ nullptr };
@@ -80,6 +85,7 @@ private:
 	ComponentDragger dragger;
 	ComponentBoundsConstrainer* constrainer;
 	ScopedPointer<Colour> nodeColour;
+	ScopedPointer<Label> mainLbl{ nullptr };
 
 	std::atomic<bool> isMoving{ false };
 

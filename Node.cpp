@@ -6,7 +6,7 @@
 #define MAX_NUM_32_BIT 0x7FFFFFFF
 
 Node::Node(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer)
-	: sampleRate(0), buffSize(0), constrainer(constraint), container(nodeContainer), id(nodeId)
+	: sampleRate(0), buffSize(0), container(nodeContainer), constrainer(constraint), id(nodeId)
 {
 	init();
 }
@@ -19,7 +19,10 @@ Node::~Node()
 void Node::init()
 {
 	setBroughtToFrontOnMouseClick(true);
-
+	addAndMakeVisible(mainLbl = new Label("Main Label", ""));
+	mainLbl->setEditable(false);
+	mainLbl->setAlwaysOnTop(true);
+	mainLbl->setInterceptsMouseClicks(false, false);
 	setSize(100, 100);
 }
 
@@ -75,6 +78,8 @@ void Node::mouseDoubleClick(const MouseEvent& event)
 void Node::resized()
 {
 	setRadius();
+	mainLbl->setBounds(0, 0, 100, 100);
+	mainLbl->setJustificationType(Justification::centred);
 }
 
 bool Node::equals(Node& other) const
@@ -173,6 +178,11 @@ bool Node::getIsSet() const
 	return isSet;
 }
 
+void Node::setMainLabelText(String text) const
+{
+	mainLbl->setText(text, dontSendNotification);
+}
+
 float Node::limit(float value)
 {
 	if (value > 1)
@@ -205,6 +215,11 @@ int Node::NodeComperator::compareElements(Node* first, Node* second)
 		return -1;
 	}
 	return 0;
+}
+
+void Node::changeMainLabelText(const String newText)
+{
+	mainLbl->setText(newText, dontSendNotification);
 }
 
 void Node::paintCircle(Colour* colour, Graphics& g) const

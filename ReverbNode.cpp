@@ -4,6 +4,7 @@ ReverbNode::ReverbNode(int nodeId, ComponentBoundsConstrainer* constraint, abstr
 	: FxNode(nodeId, constraint, nodeContainer, FxType::Reverb)
 {
 	reverb.setParameters(params); //passed by reference
+	setMainLabelText("Reverb");
 }
 
 void ReverbNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)

@@ -5,6 +5,7 @@ OscNode::OscNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractCon
 	OscType oscType) : Node(nodeId, constraint, nodeContainer)
 {
 	type = oscType;
+	setMainLabelText("osc::" + LookupTable::oscTypeToString(type));
 }
 
 OscNode::~OscNode()
@@ -32,6 +33,7 @@ void OscNode::setType(OscType oscType)
 	if (type != oscType)
 	{
 		type = oscType;
+		setMainLabelText("osc::" + LookupTable::oscTypeToString(type));
 		makeTable(type);
 		if (type == OscType::Noise)
 		{

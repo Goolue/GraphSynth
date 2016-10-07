@@ -3,20 +3,21 @@
 #define LOOKUP_TABLE_ARR_SIZE 1024
 #define LOOKUP_TABLE_FREQUENCY 440 //Hz
 
-enum class OscType
-{
-	Unset,
-	Sine,
-	Square,
-	Triangle,
-	Saw,
-	ReverseSaw,
-	Noise
-};
 
 class LookupTable
 {
 public:
+	enum class OscType
+	{
+		Unset,
+		Sine,
+		Square,
+		Triangle,
+		Saw,
+		ReverseSaw,
+		Noise
+	};
+	
 	LookupTable(int rate, int size);
 	LookupTable(int rate, int size, float freq);
 	~LookupTable();
@@ -59,14 +60,6 @@ private:
 	int sampleRate;
 	int buffSize;
 	int position{ 0 };
-
-	/*float sineArr[LOOKUP_TABLE_ARR_SIZE];
-	float sqaureArr[LOOKUP_TABLE_ARR_SIZE];
-	float triangleArr[LOOKUP_TABLE_ARR_SIZE];
-	float sawArr[LOOKUP_TABLE_ARR_SIZE];
-	float reverseSawArr[LOOKUP_TABLE_ARR_SIZE];*/
-
-	//ScopedPointer<OwnedArray<Array<float>>> mainArr;
 
 	Array<float> sineArr;
 	Array<float> squareArr;

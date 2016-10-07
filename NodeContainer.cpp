@@ -121,6 +121,7 @@ void NodeContainer::resized()
 
 void NodeContainer::paint(Graphics& g)
 {
+	//TODO: should only repaint moving nodes!
 	g.setColour(Colours::black);
 	for (Node* node : *refCountedArr)
 	{

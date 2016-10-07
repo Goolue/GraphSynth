@@ -1,10 +1,26 @@
 
 #include "OverdriveNode.h"
 
+String OverdriveNode::overdriveTypeToString(OverdriveType overdriveType)
+{
+	switch (overdriveType)
+	{
+	case OverdriveType::None:			return "None";
+	case OverdriveType::Linear:			return "Linear";
+	case OverdriveType::Triangular:		return "Triangular";
+	case OverdriveType::Exponential:	return "Exponential";
+	case OverdriveType::Root:			return "Root";
+	default: 
+		DBG("overdriveTypeToString switch got to default!");
+		return "?";
+	}
+}
+
 OverdriveNode::OverdriveNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer)
 	: FxNode(nodeId, constraint, nodeContainer, FxType::Overdrive) 
 {
-	overdriveType = OverdriveType::None;
+	overdriveType = OverdriveType::Linear;
+	setMainLabelText("overdrive::" + overdriveTypeToString(overdriveType));
 	fillMap();
 }
 
@@ -38,6 +54,7 @@ void OverdriveNode::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 			DBG("Unknown overdrive type!");
 			break;
 		}
+		setMainLabelText("overdrive::" + overdriveTypeToString(overdriveType));
 	}
 }
 

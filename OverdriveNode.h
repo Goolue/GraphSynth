@@ -13,6 +13,7 @@ public:
 		Exponential,
 		Root
 	};
+	static String overdriveTypeToString(OverdriveType overdriveType);
 
 	OverdriveNode(int nodeId, ComponentBoundsConstrainer* constraint, abstractContainer<Node>* nodeContainer);
 
@@ -41,7 +42,7 @@ private:
 			case OverdriveType::Exponential: 
 				toReturn = 3;
 				break;
-			case OverdriveType::Root: break;
+			case OverdriveType::Root:
 				toReturn = 4;
 			default: break;
 			}
