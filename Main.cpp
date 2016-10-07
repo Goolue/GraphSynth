@@ -9,6 +9,7 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include <gtest/gtest.h>
 
 Component* createMainContentComponent();
 
@@ -27,6 +28,15 @@ public:
     void initialise (const String& commandLine) override
     {
         // This method is where you should put your application's initialisation code..
+
+#ifndef NDEBUG //run this only in debug
+		int argc = 1;
+		char* argv = new char('c');
+		testing::InitGoogleTest(&argc, &argv);
+		RUN_ALL_TESTS();
+		delete(argv);
+#endif // !NDEBUG //run this only in debug
+
 
         mainWindow = new MainWindow (getApplicationName());
     }
