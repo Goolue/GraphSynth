@@ -76,6 +76,8 @@ public:
 		shouldSort = sort;
 	}
 
+	virtual void addObjToSort(ObjectType* obj) = 0;
+
 	Component* getCurrentController() const
 	{
 		return currController;

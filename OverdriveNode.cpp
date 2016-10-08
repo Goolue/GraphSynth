@@ -131,26 +131,13 @@ float OverdriveNode::calcTriangularDrive(const float x) const
 
 float OverdriveNode::calcExponentialDrive(const float x) const
 {
-	//TODO: this interpolation isn't smooth
 	const float val = value.value;
-	const int ceilVal = ceil(val);
-	float out = 0;
-	if (val == ceilVal) //val is a whole number
-	{
-		out = powf(x, val);
-	}
-	else
-	{
-		const int floorVal = floor(val);
-		const float reminder = val - floorVal;
-		const float toAdd = reminder * powf(x, ceilVal);
-		out = powf(x, floorVal) + toAdd; //interpolation
-	}
+	const float out = powf(abs(x), val);
 	if (x >= 0)
 	{
 		return out;
 	}
-	return -1 * abs(out);
+	return -out;
 }
 
 float OverdriveNode::calcRootDrive(const float x) const

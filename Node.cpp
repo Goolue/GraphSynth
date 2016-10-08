@@ -38,7 +38,9 @@ void Node::paint(Graphics& g)
 void Node::mouseDown(const MouseEvent& event)
 {
 	isMoving = true;
+	//container->addObjToSort(this);
 	dragger.startDraggingComponent(this, event);
+
 	auto controller = container->getNodeController(id);
 	auto currController = container->getCurrentController();
 	if (currController == nullptr || currController != controller)

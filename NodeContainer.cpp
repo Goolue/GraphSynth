@@ -86,6 +86,7 @@ void NodeContainer::run()
 			shouldRepaint = false;
 			const MessageManagerLock mmLock;
 			repaint();
+			//repaintArea = Rectangle<int>();
 		}
 		wait(-1);
 	}
@@ -120,8 +121,7 @@ void NodeContainer::resized()
 }
 
 void NodeContainer::paint(Graphics& g)
-{
-	//TODO: should only repaint moving nodes!
+{ 
 	g.setColour(Colours::black);
 	for (Node* node : *refCountedArr)
 	{
@@ -133,6 +133,27 @@ void NodeContainer::paint(Graphics& g)
 			line.setEnd(getNodeLeftX(node), getNodeY(node));
 
 			g.drawArrow(line, 3, 10, 10);
+		}
+	}
+}
+
+void NodeContainer::paint(Graphics& g, Rectangle<int>& rect) const
+{
+	g.setColour(Colours::black);
+	for (Node* node : *refCountedArr)
+	{
+		if ((!rect.isEmpty() && rect.contains(node->getBounds())) 
+			|| rect.isEmpty())
+		{
+			Node* prev = node->getPrev();
+			if (prev != nullptr)
+			{
+				Line<float> line;
+				line.setStart(getNodeRightX(prev), getNodeY(prev));
+				line.setEnd(getNodeLeftX(node), getNodeY(node));
+
+				g.drawArrow(line, 3, 10, 10);
+			}
 		}
 	}
 }
@@ -171,6 +192,11 @@ Node* NodeContainer::addToArray(Node* const toAdd)
 	shouldRepaint = true;
 	notify();
 	return toAdd;
+}
+
+void NodeContainer::addObjToSort(Node* obj)
+{
+	nodesToSort.add(obj);
 }
 
 Component* NodeContainer::getNodeController(int id) const
@@ -267,7 +293,7 @@ int NodeContainer::getNodeY(Node* node)
 
 void NodeContainer::sort()
 {
-	refCountedArr->sort(comperator, true);
+	refCountedArr->sort(comperator, false);
 	int size = refCountedArr->size();
 	for (int i = 0; i < size; ++i)
 	{
@@ -290,6 +316,42 @@ void NodeContainer::sort()
 			curr->setNext(nullptr);
 		}
 	}
+
+	/*int finalRight = INFINITY;
+	int finalLeft = 0;
+	int finalTop = INFINITY;
+	int finalBottom = 0;
+
+	for (Node* node: nodesToSort)
+	{
+		int index = refCountedArr->indexOf(node);
+		Node* next = index == size - 1 ? nullptr : refCountedArr->getUnchecked(index + 1);
+		Node* prev = index == 0 ? nullptr : refCountedArr->getUnchecked(index - 1);
+		node->setNext(next);
+		node->setPrev(prev);
+
+		int right = next != nullptr ? next->getX() + next->getWidth() : node->getX() + node->getWidth();
+		int left = prev != nullptr ? prev->getX() : node->getX();
+		finalRight = right > finalRight ? right : finalRight;
+		finalLeft = left < finalLeft? left : finalLeft;
+		int topPrev = prev == nullptr ? node->getY() : jmin(node->getY(), prev->getY());
+		int topNext = next == nullptr ? node->getY() : jmin(node->getY(), next->getY());
+		int top = jmin(topPrev, topNext);
+		finalTop = top < finalTop ? top : finalTop;
+		int bottomPrev = prev == nullptr ? node->getY() + node->getHeight() : 
+			jmax(prev->getY() + prev->getHeight(), node->getY() + node->getHeight());
+		int bottomNext = next == nullptr ? node->getY() + node->getHeight() :
+			jmax(next->getY() + next->getHeight(), node->getY() + node->getHeight());
+		int bottom = jmax(bottomPrev, bottomNext);
+		finalBottom = bottom > finalBottom ? bottom : finalTop;
+
+		if (!node->getIsMoving())
+		{
+			nodesToSort.removeFirstMatchingValue(node);
+		}
+	}*/
+	shouldSort = false;
 	shouldRepaint = false;
 	repaint();
+	//repaintArea = repaintArea.getUnion(Rectangle<int>(finalLeft, finalTop, finalRight - finalLeft, finalBottom - finalTop));
 }

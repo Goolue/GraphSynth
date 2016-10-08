@@ -23,9 +23,12 @@ public:
 	void NodeContainer::buttonClicked(Button* btn) override;
 	void NodeContainer::resized() override;
 	void paint(Graphics& g) override;
+	void paint(Graphics& g, Rectangle<int>& rect) const;
 
 	virtual void deleteFromArray(Node* obj) override;
 	virtual Node* addToArray(Node* const toAdd) override;
+
+	void addObjToSort(Node* obj) override;
 
 	Component* getNodeController(int id) const override;
 
@@ -37,10 +40,6 @@ protected:
 	virtual ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
 	virtual ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
 	virtual ReferenceCountedObjectPtr<ReverbNode> createReverbNode();
-
-	/*Button* getOscBtn() const;
-	Button* getOverdriveBtn() const;
-	Button* getReverbBtn() const;*/
 
 private:
 	//funcs:
@@ -55,6 +54,9 @@ private:
 	ScopedPointer<TextButton> addOverdriveBtn;
 	ScopedPointer<TextButton> addReverbBtn;
 	ScopedPointer<TextButton> addFilterBtn;
+
+	Array<Node*> nodesToSort;
+	//Rectangle<int> repaintArea;
 
 	HashMap<int, ReferenceCountedObjectPtr<AbstractNodeConroller>> idToControllerMap;
 
