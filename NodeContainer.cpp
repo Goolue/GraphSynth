@@ -148,7 +148,6 @@ void NodeContainer::deleteFromArray(Node* obj)
 		}
 		auto controller = getNodeController(id);
 		removeChildComponent(controller);
-		//controller->setVisible(false);
 		idToControllerMap.remove(id);
 		refCountedArr->removeObject(obj);
 	}
@@ -235,6 +234,21 @@ ReferenceCountedObjectPtr<ReverbNode> NodeContainer::createReverbNode()
 
 	return node;
 }
+
+//Button* NodeContainer::getOscBtn() const
+//{
+//	return addOscBtn;
+//}
+//
+//Button* NodeContainer::getOverdriveBtn() const
+//{
+//	return addOverdriveBtn;
+//}
+//
+//Button* NodeContainer::getReverbBtn() const
+//{
+//	return addReverbBtn;
+//}
 
 int NodeContainer::getNodeLeftX(Node* node)
 {

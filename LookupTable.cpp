@@ -60,6 +60,7 @@ const Array<float>* LookupTable::getArray() const
 	{
 	case OscType::Sine:			return &sineArr;
 	case OscType::Square:		return &squareArr;
+	case OscType::Triangle:		return &triangleArr;
 	case OscType::Saw:			return &sawArr;
 	case OscType::ReverseSaw:	return &reverseSawArr;
 	default:

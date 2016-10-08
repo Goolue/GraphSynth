@@ -33,10 +33,14 @@ protected:
 	//funs:
 	void addContoller(AbstractNodeConroller* controller);
 
-	ReferenceCountedObjectPtr<OscNode> createOscNode();
-	ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
-	ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
-	ReferenceCountedObjectPtr<ReverbNode> createReverbNode();
+	virtual ReferenceCountedObjectPtr<OscNode> createOscNode();
+	virtual ReferenceCountedObjectPtr<OscNode> createOscNode(OscType type);
+	virtual ReferenceCountedObjectPtr<OverdriveNode> createOverdriveNode();
+	virtual ReferenceCountedObjectPtr<ReverbNode> createReverbNode();
+
+	/*Button* getOscBtn() const;
+	Button* getOverdriveBtn() const;
+	Button* getReverbBtn() const;*/
 
 private:
 	//funcs:

@@ -3,6 +3,7 @@
 
 //#include "../JuceLibraryCode/JuceHeader.h"
 #include "NodeContainer.h"
+#include <vld.h> 
 
 
 //==============================================================================
