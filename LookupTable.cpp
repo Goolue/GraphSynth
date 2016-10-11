@@ -213,6 +213,27 @@ void LookupTable::fillTriangleArr()
 void LookupTable::fillSawArr()
 {
 	sawFillHelper(1, 0, &sawArr);
+	//float slope = static_cast<float>(2.f / LOOKUP_TABLE_ARR_SIZE);
+	//double phase = 0;
+	//int polarity = 1;
+	//bool flipped = false;
+	//float initValue = 0.0;
+	//for (int i = 0; i < LOOKUP_TABLE_ARR_SIZE; ++i)
+	//{
+	//	DBG(initValue);
+	//	sawArr.add(0);
+	//	phase += sineDelta;
+	//	if (!flipped && phase > double_Pi)
+	//	{
+	//		flipped = true;
+	//		//polarity = -1;
+	//		initValue *= -1;
+	//	}
+	//	else
+	//	{
+	//		initValue += slope * polarity;
+	//	}
+	//}
 }
 
 void LookupTable::fillReverseSawArr()
@@ -233,9 +254,11 @@ void LookupTable::sawFillHelper(int slopePolarity, float initValue, Array<float>
 		if (!flipped && phase > double_Pi)
 		{
 			flipped = true;
-			polarity = -1;
 			initValue *= -1;
 		}
-		initValue += slope * polarity;
+		else
+		{
+			initValue += slope * polarity;
+		}
 	}
 }
