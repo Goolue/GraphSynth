@@ -148,9 +148,11 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 		float floorVal = toReadFrom->getUnchecked(currPosition);
 		float ceilVal = toReadFrom->getUnchecked((currPosition + 1) % LOOKUP_TABLE_ARR_SIZE);
 		float val = interpolateValues(ratio, floorVal, ceilVal) * volume.value;
-		toWriteTo[i] = limit(val + toWriteTo[i]);
+		//toWriteTo[i] = limit(val + toWriteTo[i]);
+		toWriteTo[i] += val;
 		position += ratio;
 	}
+	currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
 	lookupTable->setPosition(currPosition);
 	return buff;
 }

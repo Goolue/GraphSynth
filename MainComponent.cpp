@@ -21,7 +21,7 @@ public:
         setSize (1000, 1000);
 
         // specify the number of input and output channels that we want to open
-        setAudioChannels (2, 2);
+        setAudioChannels (0, 2);
     }
 
     ~MainContentComponent()
@@ -46,6 +46,7 @@ public:
     void getNextAudioBlock (const AudioSourceChannelInfo& bufferToFill) override
     {
 		container->getNextAudioBlock(bufferToFill);
+		limit(bufferToFill.buffer);
     }
 
     void releaseResources() override
@@ -73,15 +74,29 @@ public:
 
 private:
     //==============================================================================
+	//funcs:
+	static void limit(AudioSampleBuffer* buff)
+	{
+		int numChannels = buff->getNumChannels();
+		int size = buff->getNumSamples();
+		float maxAmp = 0.0;
+		for (int i = 0; i < numChannels; ++i)
+		{
+			float currAmp = buff->getMagnitude(i, 0, size);
+			if (currAmp > maxAmp)
+			{
+				maxAmp = currAmp;
+			}
+		}
+		if (maxAmp > 1.0)
+		{
+			float toDec = 1.0 / maxAmp;
+			buff->applyGain(0, size, toDec);
+		}
+	}
 
-    // Your private member variables go here...
+	//vars:
 	ScopedPointer<NodeContainer> container;
-	LookupTable* lookup;
-	float* arr;
-	int size = 0;
-	int position = 0;
-
-
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
