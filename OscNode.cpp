@@ -145,9 +145,10 @@ ReferenceCountedBuffer::Ptr OscNode::generateBuff(ReferenceCountedBuffer::Ptr bu
 	for (int i = 0; i < buffSize; ++i)
 	{
 		currPosition = static_cast<int>(position) % LOOKUP_TABLE_ARR_SIZE;
-		float floorVal = toReadFrom->getUnchecked(currPosition);
-		float ceilVal = toReadFrom->getUnchecked((currPosition + 1) % LOOKUP_TABLE_ARR_SIZE);
-		float val = interpolateValues(ratio, floorVal, ceilVal) * volume.value;
+		float currVal = toReadFrom->getUnchecked(currPosition);
+		float nextVal = toReadFrom->getUnchecked((currPosition + 1) % LOOKUP_TABLE_ARR_SIZE);
+		float val = interpolateValues(ratio, currVal, nextVal) * volume.value;
+		//DBG(val);
 		toWriteTo[i] += val;
 		position += ratio;
 	}
@@ -168,10 +169,10 @@ ReferenceCountedBuffer::Ptr OscNode::generateNoise(ReferenceCountedBuffer::Ptr b
 	return buff;
 }
 
-float OscNode::interpolateValues(double ratio, double floor, double ceil)
+float OscNode::interpolateValues(double ratio, double curr, double next)
 {
-	float slope = ceil - floor;
-	return floor + ratio * slope;
+	float slope = abs(next) - abs(curr);
+	return curr + ratio * slope;
 }
 
 void OscNode::setControllerToNoise() const

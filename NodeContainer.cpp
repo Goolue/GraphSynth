@@ -39,29 +39,22 @@ void NodeContainer::getNextAudioBlock(const AudioSourceChannelInfo& bufferToFill
 	else
 	{
 		Node* last = refCountedArr->getLast();
-		/*last->checkIfSet();
-		if (last->getIsSet())
-		{*/
-			auto buff = last->process();
-			auto sampleBuff = buff->getAudioSampleBuffer();
-			int size = bufferToFill.buffer->getNumSamples();
-			int numChannels = bufferToFill.buffer->getNumChannels();
-			int sampleBuffSize = sampleBuff->getNumSamples();
-			int sampleBuffNumChannels = sampleBuff->getNumChannels();
-			for (int channel = 0; channel < numChannels; ++channel)
-			{
-				const float* toReadFrom = sampleBuff->getReadPointer(channel % sampleBuffNumChannels);
-				float* toWriteTo = bufferToFill.buffer->getWritePointer(channel);
-				for (int i = 0; i < size; ++i)
-				{
-					toWriteTo[i] += toReadFrom[i % sampleBuffSize];
-				}
-			}
-		/*}
-		else
+		auto buff = last->process();
+		auto sampleBuff = buff->getAudioSampleBuffer();
+		int size = bufferToFill.buffer->getNumSamples();
+		int numChannels = bufferToFill.buffer->getNumChannels();
+		int sampleBuffSize = sampleBuff->getNumSamples();
+		int sampleBuffNumChannels = sampleBuff->getNumChannels();
+		for (int channel = 0; channel < numChannels; ++channel)
 		{
-			DBG("Node is not set!");
-		}*/
+			const float* toReadFrom = sampleBuff->getReadPointer(channel % sampleBuffNumChannels);
+			float* toWriteTo = bufferToFill.buffer->getWritePointer(channel);
+			for (int i = 0; i < size; ++i)
+			{
+				toWriteTo[i] += toReadFrom[i % sampleBuffSize];
+				//DBG(toWriteTo[i]);
+			}
+		}
 	}
 }
 
