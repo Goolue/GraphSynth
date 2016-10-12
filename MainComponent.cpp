@@ -1,9 +1,8 @@
 #ifndef MAINCOMPONENT_H_INCLUDED
 #define MAINCOMPONENT_H_INCLUDED
 
-//#include "../JuceLibraryCode/JuceHeader.h"
 #include "NodeContainer.h"
-#include <vld.h> 
+//#include <vld.h> 
 
 
 //==============================================================================

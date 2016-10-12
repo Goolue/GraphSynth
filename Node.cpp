@@ -19,7 +19,6 @@ Node::~Node()
 void Node::init()
 {
 	setBroughtToFrontOnMouseClick(true);
-	//setPaintingIsUnclipped(true);
 	addAndMakeVisible(mainLbl = new Label("Main Label", ""));
 	mainLbl->setEditable(false);
 	mainLbl->setAlwaysOnTop(true);
@@ -34,6 +33,7 @@ void Node::paint(Graphics& g)
 		nodeColour = randomColour();
 	}
 	paintCircle(nodeColour, g);
+	g.drawRect(0, 0, getWidth(), getHeight(), 2);
 	if (next != nullptr)
 	{
 		int radius = circleDiameter / 2;
@@ -206,21 +206,18 @@ void Node::nextHasMoved()
 		int nextY = next->getY();
 		int newWidth = next->getX() - x;
 		int nextDiff = next->getTopToCircleDistance();
-		int newHight;// = y <= nextY ? getHeight() : getHeight() + nextY - y;
-		if (y + topToCircleDistance <= nextY + nextDiff)
+		int newHight;
+		if (y + topToCircleDistance <= nextY + nextDiff) //this node is above next
 		{
-			newHight = jmax(nextY - y + topToCircleDistance + circleDiameter / 2, circleDiameter);
-			topToCircleDistance = 0;
+			newHight = jmax(nextY - y + circleDiameter / 2, circleDiameter + topToCircleDistance);
 			setBounds(x, y, newWidth, newHight);
 		}
-		else
+		else //next is above this node
 		{
-			topToCircleDistance = y + topToCircleDistance - nextY - nextDiff;
-			newHight = getHeight() + topToCircleDistance;
+			topToCircleDistance += y - nextY - nextDiff;
+			newHight = circleDiameter + topToCircleDistance;
 			setBounds(x, nextY, newWidth, newHight);
 		}
-		//DBG(newHight);
-		//setSize(newWidth, newHight);
 	}
 }
 
