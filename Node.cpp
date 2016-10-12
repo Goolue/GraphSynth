@@ -33,17 +33,29 @@ void Node::paint(Graphics& g)
 		nodeColour = randomColour();
 	}
 	paintCircle(nodeColour, g);
+
+
+	//**********************
 	g.drawRect(0, 0, getWidth(), getHeight(), 2);
+	//**********************
+
+
 	if (next != nullptr)
 	{
 		int radius = circleDiameter / 2;
-		int nextY = next->getY() - getY() + radius;
+		int nextY = next->getY() - getY() + radius + next->getTopToCircleDistance();
 		Line<float> line;
 		line.setStart(circleDiameter, radius + topToCircleDistance);
 		line.setEnd(getWidth(), nextY);
 
 		g.setColour(Colours::black);
 		g.drawArrow(line, 3, 10, 10);
+	}
+	else if (getWidth() != circleDiameter || getHeight() != circleDiameter)
+	{
+		int temp = topToCircleDistance;
+		topToCircleDistance = 0;
+		setBounds(getX(), getY() + temp, circleDiameter, circleDiameter);
 	}
 	if (prev != nullptr)
 	{
@@ -80,6 +92,10 @@ void Node::mouseDrag(const MouseEvent& event)
 			container->setShouldSort(true);
 			container->notify();
 
+			if (next != nullptr)
+			{
+				nextHasMoved();
+			}
 			if (prev != nullptr)
 			{
 				prev->nextHasMoved();
@@ -199,17 +215,24 @@ int Node::getTopToCircleDistance() const
 
 void Node::nextHasMoved()
 {
-	if (next != nullptr)
+	if (next == nullptr)
+	{
+		if (getHeight() != circleDiameter || getWidth() != circleDiameter)
+		{
+			setSize(circleDiameter, circleDiameter);
+		}
+	}
+	else
 	{
 		int x = getX();
 		int y = getY();
 		int nextY = next->getY();
-		int newWidth = next->getX() - x;
 		int nextDiff = next->getTopToCircleDistance();
+		int newWidth = jmax(circleDiameter, next->getX() - getX());
 		int newHight;
 		if (y + topToCircleDistance <= nextY + nextDiff) //this node is above next
 		{
-			newHight = jmax(nextY - y + circleDiameter / 2, circleDiameter + topToCircleDistance);
+			newHight = jmax(nextY + nextDiff + circleDiameter - y, circleDiameter + topToCircleDistance);
 			setBounds(x, y, newWidth, newHight);
 		}
 		else //next is above this node

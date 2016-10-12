@@ -17,7 +17,7 @@ public:
     MainContentComponent()
     {
 		addAndMakeVisible(container = new NodeContainer);
-        setSize (1000, 1000);
+        setSize (1000, 800);
 
         // specify the number of input and output channels that we want to open
         setAudioChannels (0, 2);

@@ -92,7 +92,7 @@ private:
 	std::atomic<bool> isMoving{ false };
 
 	int id;
-	float circleDiameter{ 0 };
+	int circleDiameter{ 0 };
 	bool isFirstPaint{ true };
 	int topToCircleDistance{ 0 };
 
