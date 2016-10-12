@@ -115,7 +115,7 @@ void NodeContainer::resized()
 
 void NodeContainer::paint(Graphics& g)
 { 
-	g.setColour(Colours::black);
+	/*g.setColour(Colours::black);
 	for (Node* node : *refCountedArr)
 	{
 		Node* prev = node->getPrev();
@@ -127,29 +127,29 @@ void NodeContainer::paint(Graphics& g)
 
 			g.drawArrow(line, 3, 10, 10);
 		}
-	}
+	}*/
 }
 
-void NodeContainer::paint(Graphics& g, Rectangle<int>& rect) const
-{
-	g.setColour(Colours::black);
-	for (Node* node : *refCountedArr)
-	{
-		if ((!rect.isEmpty() && rect.contains(node->getBounds())) 
-			|| rect.isEmpty())
-		{
-			Node* prev = node->getPrev();
-			if (prev != nullptr)
-			{
-				Line<float> line;
-				line.setStart(getNodeRightX(prev), getNodeY(prev));
-				line.setEnd(getNodeLeftX(node), getNodeY(node));
-
-				g.drawArrow(line, 3, 10, 10);
-			}
-		}
-	}
-}
+//void NodeContainer::paint(Graphics& g, Rectangle<int>& rect) const
+//{
+//	g.setColour(Colours::black);
+//	for (Node* node : *refCountedArr)
+//	{
+//		if ((!rect.isEmpty() && rect.contains(node->getBounds())) 
+//			|| rect.isEmpty())
+//		{
+//			Node* prev = node->getPrev();
+//			if (prev != nullptr)
+//			{
+//				Line<float> line;
+//				line.setStart(getNodeRightX(prev), getNodeY(prev));
+//				line.setEnd(getNodeLeftX(node), getNodeY(node));
+//
+//				g.drawArrow(line, 3, 10, 10);
+//			}
+//		}
+//	}
+//}
 
 void NodeContainer::deleteFromArray(Node* obj)
 {
@@ -345,6 +345,6 @@ void NodeContainer::sort()
 	}*/
 	shouldSort = false;
 	shouldRepaint = false;
-	repaint();
+	//repaint();
 	//repaintArea = repaintArea.getUnion(Rectangle<int>(finalLeft, finalTop, finalRight - finalLeft, finalBottom - finalTop));
 }

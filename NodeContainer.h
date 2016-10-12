@@ -23,7 +23,7 @@ public:
 	void NodeContainer::buttonClicked(Button* btn) override;
 	void NodeContainer::resized() override;
 	void paint(Graphics& g) override;
-	void paint(Graphics& g, Rectangle<int>& rect) const;
+	//void paint(Graphics& g, Rectangle<int>& rect) const;
 
 	virtual void deleteFromArray(Node* obj) override;
 	virtual Node* addToArray(Node* const toAdd) override;

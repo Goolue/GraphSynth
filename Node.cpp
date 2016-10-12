@@ -19,6 +19,7 @@ Node::~Node()
 void Node::init()
 {
 	setBroughtToFrontOnMouseClick(true);
+	//setPaintingIsUnclipped(true);
 	addAndMakeVisible(mainLbl = new Label("Main Label", ""));
 	mainLbl->setEditable(false);
 	mainLbl->setAlwaysOnTop(true);
@@ -33,12 +34,27 @@ void Node::paint(Graphics& g)
 		nodeColour = randomColour();
 	}
 	paintCircle(nodeColour, g);
+	if (next != nullptr)
+	{
+		int radius = circleDiameter / 2;
+		int nextY = next->getY() - getY() + radius;
+		Line<float> line;
+		line.setStart(circleDiameter, radius + topToCircleDistance);
+		line.setEnd(getWidth(), nextY);
+
+		g.setColour(Colours::black);
+		g.drawArrow(line, 3, 10, 10);
+	}
+	if (prev != nullptr)
+	{
+		prev->nextHasMoved();
+	}
 }
 
 void Node::mouseDown(const MouseEvent& event)
 {
+	broughtToFront();
 	isMoving = true;
-	//container->addObjToSort(this);
 	dragger.startDraggingComponent(this, event);
 
 	auto controller = container->getNodeController(id);
@@ -63,6 +79,11 @@ void Node::mouseDrag(const MouseEvent& event)
 		{
 			container->setShouldSort(true);
 			container->notify();
+
+			if (prev != nullptr)
+			{
+				prev->nextHasMoved();
+			}
 		}
 	}
 }
@@ -79,9 +100,13 @@ void Node::mouseDoubleClick(const MouseEvent& event)
 
 void Node::resized()
 {
-	setRadius();
-	mainLbl->setBounds(0, 0, 100, 100);
-	mainLbl->setJustificationType(Justification::centred);
+	if (isFirstPaint)
+	{
+		setRadius();
+		mainLbl->setJustificationType(Justification::centred);
+		isFirstPaint = false;
+	}
+	mainLbl->setBounds(0, topToCircleDistance, circleDiameter, circleDiameter);
 }
 
 bool Node::equals(Node& other) const
@@ -167,6 +192,38 @@ bool Node::getIsMoving() const
 	return isMoving.load();
 }
 
+int Node::getTopToCircleDistance() const
+{
+	return topToCircleDistance;
+}
+
+void Node::nextHasMoved()
+{
+	if (next != nullptr)
+	{
+		int x = getX();
+		int y = getY();
+		int nextY = next->getY();
+		int newWidth = next->getX() - x;
+		int nextDiff = next->getTopToCircleDistance();
+		int newHight;// = y <= nextY ? getHeight() : getHeight() + nextY - y;
+		if (y + topToCircleDistance <= nextY + nextDiff)
+		{
+			newHight = jmax(nextY - y + topToCircleDistance + circleDiameter / 2, circleDiameter);
+			topToCircleDistance = 0;
+			setBounds(x, y, newWidth, newHight);
+		}
+		else
+		{
+			topToCircleDistance = y + topToCircleDistance - nextY - nextDiff;
+			newHight = getHeight() + topToCircleDistance;
+			setBounds(x, nextY, newWidth, newHight);
+		}
+		//DBG(newHight);
+		//setSize(newWidth, newHight);
+	}
+}
+
 void Node::checkIfSet()
 {
 	if (sampleRate > 0 && buffSize > 0 && numOfChannels > 0)
@@ -227,7 +284,7 @@ void Node::changeMainLabelText(const String newText)
 void Node::paintCircle(Colour* colour, Graphics& g) const
 {
 	g.setColour(*colour);
-	g.fillEllipse(0,0, circleDiameter, circleDiameter);
+	g.fillEllipse(0, topToCircleDistance, circleDiameter, circleDiameter);
 }
 
 Colour* Node::randomColour() const
@@ -244,7 +301,6 @@ Colour* Node::randomColour() const
 void Node::setRadius()
 {
 	circleDiameter = getBounds().getWidth();
-	circleRadius = circleDiameter / 2;
 }
 
 ReferenceCountedBuffer::Ptr Node::takePrevBuff() const

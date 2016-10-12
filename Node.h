@@ -43,6 +43,8 @@ public:
 	virtual void setSampleRate(int rate);
 	void setContainer(abstractContainer<Node>* nodeContainer);
 	bool getIsMoving() const;
+	int getTopToCircleDistance() const;
+	void nextHasMoved();
 
 	void checkIfSet();
 	bool getIsSet() const;
@@ -90,8 +92,9 @@ private:
 	std::atomic<bool> isMoving{ false };
 
 	int id;
-	float circleRadius;
-	float circleDiameter;
+	float circleDiameter{ 0 };
+	bool isFirstPaint{ true };
+	int topToCircleDistance{ 0 };
 
 	bool isSet {false};
 };
