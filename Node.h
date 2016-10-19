@@ -45,6 +45,7 @@ public:
 	bool getIsMoving() const;
 	int getTopToCircleDistance() const;
 	void nextHasMoved();
+	void move(const juce::MouseEvent& event);
 
 	void checkIfSet();
 	bool getIsSet() const;
@@ -97,4 +98,6 @@ private:
 	int topToCircleDistance{ 0 };
 
 	bool isSet {false};
+	int currY{ 0 }; //TODO: change this value
+	Point<int> dragStartPoint{ 0, 0 };
 };

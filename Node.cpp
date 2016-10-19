@@ -23,6 +23,7 @@ void Node::init()
 	mainLbl->setEditable(false);
 	mainLbl->setAlwaysOnTop(true);
 	mainLbl->setInterceptsMouseClicks(false, false);
+	currY = getY();
 	setSize(100, 100);
 }
 
@@ -63,11 +64,12 @@ void Node::paint(Graphics& g)
 	}
 }
 
-void Node::mouseDown(const MouseEvent& event)
+void Node::mouseDown(const juce::MouseEvent& event)
 {
 	broughtToFront();
 	isMoving = true;
 	dragger.startDraggingComponent(this, event);
+	dragStartPoint = event.getMouseDownPosition();
 
 	auto controller = container->getNodeController(id);
 	auto currController = container->getCurrentController();
@@ -82,34 +84,37 @@ void Node::mouseDown(const MouseEvent& event)
 	}
 }
 
-void Node::mouseDrag(const MouseEvent& event)
+void Node::mouseDrag(const juce::MouseEvent& event)
 {
-	if (constrainer != nullptr)
-	{
-		dragger.dragComponent(this, event, constrainer);
+	/*if (constrainer != nullptr)
+	{*/
 		if (container != nullptr)
 		{
-			container->setShouldSort(true);
-			container->notify();
-
 			if (next != nullptr)
 			{
-				nextHasMoved();
+				move(event);
 			}
 			if (prev != nullptr)
 			{
+				dragger.dragComponent(this, event, constrainer);
 				prev->nextHasMoved();
 			}
+			else if (prev == nullptr && next == nullptr)
+			{
+				dragger.dragComponent(this, event, constrainer);
+			}
+			container->setShouldSort(true);
+			container->notify();
 		}
-	}
+	//}
 }
 
-void Node::mouseUp(const MouseEvent& event)
+void Node::mouseUp(const juce::MouseEvent& event)
 {
 	isMoving = false;
 }
 
-void Node::mouseDoubleClick(const MouseEvent& event)
+void Node::mouseDoubleClick(const juce::MouseEvent& event)
 {
 	container->deleteFromArray(this);
 }
@@ -230,16 +235,58 @@ void Node::nextHasMoved()
 		int nextDiff = next->getTopToCircleDistance();
 		int newWidth = jmax(circleDiameter, next->getX() - getX());
 		int newHight;
+		currY = y;
 		if (y + topToCircleDistance <= nextY + nextDiff) //this node is above next
 		{
 			newHight = jmax(nextY + nextDiff + circleDiameter - y, circleDiameter + topToCircleDistance);
-			setBounds(x, y, newWidth, newHight);
+			setSize(newWidth, newHight);
 		}
 		else //next is above this node
 		{
 			topToCircleDistance += y - nextY - nextDiff;
 			newHight = circleDiameter + topToCircleDistance;
 			setBounds(x, nextY, newWidth, newHight);
+		}
+	}
+}
+
+void Node::move(const MouseEvent& event)
+{
+	if (next == nullptr)
+	{
+		dragger.dragComponent(this, event, constrainer);
+		if (getHeight() != circleDiameter || getWidth() != circleDiameter)
+		{
+			setSize(circleDiameter, circleDiameter);
+		}
+	}
+	else
+	{
+		Point<int> pos = event.getPosition() - dragStartPoint;
+		int x = getX() + pos.getX();
+		int y = getY() + pos.getY();
+		int nextY = next->getY();
+		int nextDiff = next->getTopToCircleDistance();
+		int newWidth = jmax(circleDiameter, next->getX() - x);
+		int newHight;
+		if (y + topToCircleDistance <= nextY + nextDiff) //this node is above next
+		{
+			currY = y;
+			topToCircleDistance = jmax(0, topToCircleDistance + pos.getY());
+			newHight = jmax(nextY + next->getHeight() - y, circleDiameter + topToCircleDistance);
+			Rectangle<int> bounds(x, y, newWidth, newHight);
+			//bounds += pos;
+			constrainer->setBoundsForComponent(this, bounds, true, true, false, true);
+		}
+		else //next is above this node
+		{
+			topToCircleDistance += y - currY;
+			DBG("y: " + String(y) + ", currY: " + String(currY) + ", topToCircleDistance: " + String(topToCircleDistance));
+			currY = y;
+			newHight = circleDiameter + topToCircleDistance;
+			Rectangle<int> bounds(x, nextY, newWidth, newHight);
+			//bounds += pos;
+			constrainer->setBoundsForComponent(this, bounds, true, true, false, true);
 		}
 	}
 }
