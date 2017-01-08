@@ -14,7 +14,7 @@ TODOs (some of 'em at least):
 3) change node creation to Factory
 4) find better solutions to problems marked in the code (the TODOs within the code)
 5) add cool animations and stuff to make it look better
-6) in general, refactor the s&%^& out off it (switch cases and such)
+6) in general, refactor the s&%^& out of it (switch cases and such)
 
 Thanks for reading this, reading this mathematically proves you are a great person.
 Feel free to contact me at oded.rojtblat@gmail.com
